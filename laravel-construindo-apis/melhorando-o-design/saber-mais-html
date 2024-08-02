@@ -1,0 +1,5 @@
+Neste vídeo nós conhecemos sobre paginação utilizando o Eloquent, mas nós só vimos isso em nossa API. Com isso a resposta em JSON possui detalhes dos links.
+
+Se precisarmos de paginação em uma aplicação fullstack, podemos usar exatamente o mesmo método. O paginate ao invés de retornar uma simples coleção, vai retornar também os links necessários para você montar sua view paginada. Inclusive há pacotes que já recebem esses dados paginados e montam a view para você.
+
+Desafio: Na aplicação fullstack, altere a listagem de todas as séries para exibí-las de forma paginada.

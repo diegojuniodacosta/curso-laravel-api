@@ -1,0 +1,18 @@
+[00:00] Sejam muito bem-vindos à Alura. Eu sou o Vinícius Dias e vou guiar vocês em mais um treinamento de Laravel. Esse treinamento será um pouco diferente porque não vamos continuar construindo aquela aplicação full stack de séries. Na verdade, vamos criar uma API para essa aplicação de séries.
+
+[00:17] Então, neste treinamento, nós vamos aprender porque ter e como criar uma API utilizando Laravel. Nesse processo veremos bastante coisa, tanto sobre o conceito geral de APIs quanto específicos sobre Laravel. Nós vamos começar, entendendo o motivo para criar uma API e vendo como criamos o primeiro endpoint, a primeira URL, a primeira rota de uma API utilizando o Laravel.
+
+[00:43] A partir disso vamos conhecer essa ferramenta bem interessante, chamada Postman. Ou seja, vamos entender porque não continuaremos utilizando somente o navegador para fazer as requisições.
+
+[00:54] A partir disso nós vamos entender um conceito chamado Rest. Nós vamos entender o que é esse padrão, quais são as suas características e começar a implementar. No final das contas nós teremos uma espécie de CRUD da aplicação, com bastante operações que podemos fazer utilizando a API.
+
+[01:12] Nós, nesse processo, vamos aprender mais sobre o Eloquent, falando sobre mutators, accessors, sobre cast, falar mais sobre query builder. Nós vamos entender sobre sub recursos de Rest e vamos entender um pouco mais ainda sobre o Rest - sobre buscas, ordenação, paginação, e vamos ver como o Laravel nos ajuda nesse ponto.
+
+[01:32] Vamos falar sobre navegação dentro de APIs e aquela sigla que ninguém sabe falar, que significa hypermedia as the engine of the application state, que é a hipermídia como motor do estado da sua aplicação, nós vamos falar bastante sobre isso.
+
+[01:46] No final das contas, obviamente vamos conversar um pouco sobre segurança: como autenticar usuários em uma API e até um pouco sobre autorização, falando sobre permissões de tipos de usuários diferentes. Enfim, tem bastante coisa para aprendermos nesse treinamento, vamos ver bastante coisa legal.
+
+[02:03] Se em algum momento você ficar com alguma dúvida, não hesite, abra um tópico no fórum. Eu tento responder pessoalmente sempre que possível, mas, quando não consigo, temos uma grande comunidade de alunos, moderadores e instrutores, com certeza alguém vai conseguir te ajudar.
+
+[02:18] Além do fórum eu te convido também a fazer parte do servidor do Discord da Alura, porque lá essa comunicação é um pouco mais interativa, mais dinâmica, e talvez você goste bastante. Enfim, eu já falei bastante, e vamos falar um pouco mais, principalmente sobre os motivos de se ter uma API. Mas esse papo é para o próximo vídeo.
+

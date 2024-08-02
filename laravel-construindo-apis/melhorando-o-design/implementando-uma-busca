@@ -1,0 +1,50 @@
+[00:00] Bem-vindos de volta a mais um capítulo deste treinamento, onde estamos criando a nossa API com Laravel. Na verdade, já temos uma API, bastante funcional inclusive. Então, neste capítulo, vamos melhorar essa API, o design, o projeto dessa API. Antes de qualquer coisa, vamos adicionar algumas outras séries no Postman na aba "Criar série".
+
+[00:18] Vamos criar algumas, em "nome" vou colocar "Moon Knight", em "seasonsQty" vou digitar "1" e em "episodesPerSeason" vai ser "6" e, em seguida, clicar no botão "Send" no canto superior direito, vamos criar mais uma "Loki", também 6 episódios, "WandaVision", "What if", são algumas séries. Deixa eu ver quais séries nós já temos, quantas nós já temos na aba "Buscar séries" e selecionando o botão "Send" no canto superior direito.
+
+[00:52] Temos 6, está bom, já temos algumas séries. Agora imagine que ao invés de 6 eu tenha 10 séries, 15 séries, 20, 100 séries, e eu tenha no meu front-end, na minha parte principal, no meu cliente, seja no meu aplicativo, na minha SPA, ou seja, o cliente que está consumindo essa API. Ele quer buscar séries.
+
+[01:21] Ele não quer fazer uma requisição para todas as séries e depois percorrer uma a uma para descobrir qual ele quer. Ele quer, por exemplo, pesquisar, porque ele não sabe qual é o nome desta série que exatamente, mas ele vai pesquisar vision, por exemplo. Então queremos permitir uma pesquisa, algo como isso: Vision ou então Wanda.
+
+[01:43] Ou então, para facilitar o nosso trabalho, ele precisará digitar exatamente o que ele quer, "WandaVision". Ou seja, nós não vamos implementar uma busca, mas sim um filtro. Existe uma certa diferença, não vou entrar em detalhes, mas se eu quisesse implementar buscas, eu poderia fazer simplesmente como no banco de dados com o LIKE, dessa forma: http://localhost:8000/api/series?nome=LIKE%WandaVision%.
+
+[02:06] Ou ir tão longe a ponto de utilizar elastic search e algumas outras ferramentas de pesquisa - Algolia, etc. Então, só para não entrarmos nessa discussão, vamos fazer assim: eu quero filtrar. Por exemplo, eu quero trazer todas as séries que tem o nome Loki. Com isso eu poderia ter mais informações, por exemplo, qual é o estúdio que produz essa série, eu teria Marvel Studios, por exemplo.
+
+[02:31] Então eu poderia pesquisar por estúdio e a busca Marvel, eu traria todos os seriados do estúdio Marvel. Enfim, as possibilidades são infinitas, mas o que eu quero implementar, por enquanto, é um filtro. Por que eu estou trazendo esse assunto? Porque muito provavelmente você já sabe com implementar isso, nós já sabemos como buscar os dados da requisição - através do request.
+
+[02:53] Nós já sabemos como criar um query utilizando o Eloquent, então basta unir esses dois conhecimentos. Mas o meu ponto, neste vídeo, não é criar uma simples query, é te mostrar que APIs restful, elas vão muito além do que só essa URL. Nós conseguimos adicionar um monte de funcionalidades a mais.
+
+[03:12] Por exemplo, na URL, eu estou adicionando um filtro. Eu poderia ter também uma ordenação, um sort by ou order by, por exemplo. Eu teria a URL dizendo que vai ordenar de forma ascendente pelo nome, "order_by[asc]=nome". Eu poderia ter coisas desse tipo. Cabe a você saber até onde você quer ir com a sua API, com o seu design de API, e quanto você quer implementar.
+
+[03:37] Inclusive você poderia ter um jeito de abstrair todos esses parâmetros "&order_by[asc]=nome", centralizar eles, para ter um local só que faz o parse desse seu request e já manda para algum query builder. Isso tudo é possível, o limite é, basicamente, a sua imaginação, você consegue implementar isso tudo.
+
+[03:54] Mas, de novo, vamos pelo básico só para termos uma ideia de como implementar algo do tipo. Vamos lá, na hora de buscar todas as séries no arquivo SeriesController, eu não vou mais simplesmente retornar um return Series::all();. O que eu quero fazer é receber o request, então: public function index (Request $request).
+
+[04:09] Se esse request, se ele tiver, se $request->has(key: 'nome');, vou fazer alguma coisa. Vamos fazer um DD para descobrir se ele tem o nome quando eu mando, dd($request->has(key: 'nome'));, e não tem o nome quando eu não mando. No Postman eu tenho o nome, quando eu envio selecionando o botão "Send" no canto superior direito - em "Preview" - ele tem, true.
+
+[04:28] Se eu não mandar ou trocar o nome na URL para "name", ele vai me retornar um false. Então já sei que eu consigo verificar se esse nome foi enviado ou não. Então se eu não tiver o nome, eu posso simplesmente fazer esse return Series::all(); mesmo, retorno todas as séries, if (!$request->has('nome')){return Series::all()}. Agora, se tiver o nome, eu posso retornar um series, where nome - na verdade, se eu não me engano, é nome mesmo, não name. É nome.
+
+[04:55] Então return Series::whereNome($request->nome). Simples assim. Só que isso, obviamente eu criei a query, eu preciso pegar o resultado, return Series::whereNome($request->nome)->get(). Então vamos no Postman experimentar, vamos testar.
+
+[05:16] Vou pesquisar por "Loki" na aba "Buscar séries" e ele precisa me retornar só uma. Então quando eu buscar, ele me retorna somente o Loki. Se eu não mandar nada, ele vai retornar todas. Viu como foi fácil implementar um filtro? Foi realmente bem tranquilo de implementar e conseguiríamos fazer isso com todos os campos que o nosso recurso tiver.
+
+[05:41] Com o nome, com o e-mail do usuário, com qualquer atributo que a model tenha, que o nosso recurso tenha, eu consigo implementar aqui um filtro. De novo, você pode tornar isso um pouco mais dinâmico, para não precisar, em cada controller seu, fazer dessa forma. Você pode ter um parse de request e etc.
+
+[06:01] Ou, inclusive, utilizar pacotes do próprio Laravel ou que funcionam com o Laravel, para fazer esse parse. Então quando você estiver implementando uma API e a necessidade de implementar algo mais genérico ou mais complexo surgir, você já tem o conhecimento de como fazer manualmente e você pode pesquisar por pacotes.
+
+[06:20] Agora um detalhe que eu acredito que eu não tenha citado, embora eu já tenha utilizado em alguns momentos. Essa sintaxe whereNome, esse método, o Laravel entende como sinônimo de where('nome', $request-nome)->get(). Ou seja, eu estou fazendo, estou criando uma query onde o nome será igual a $request.
+
+[06:37] Então sempre que eu tenho where alguma coisa igual a outra coisa, eu posso unir o where com o nome do método, dessa forma posso ter whereNome. Agora, por exemplo, se eu tivesse um usuário que tenha o campo idade, e eu quisesse fazer um filtro onde idade for maior do que 18, por exemplo, eu não consigo utilizar aquela sintaxe, preciso fazer dessa forma mesmo, where('idade', '>', 18).
+
+[07:01] Existe uma outra sintaxe, mas, enfim, já estaríamos entrando em muitos pormenores do Eloquent, coisas que são melhores você pesquisar na documentação e encontrar bem rápido, bem mais interessante do que eu ficar passando por todas as possibilidades pelo vídeo. Mas, basicamente essa sintaxe whereNome quer dizer isso, ele vai buscar esse campo "Nome" e vai filtrar por esse valor, request->nome, que é o que recebemos do request.
+
+[07:23] Então, mais uma vez, para garantir que continua funcionando: sem filtro ele traz todas as séries, se eu buscar nome igual a "What If" no Postman na URL "/series?nome=What if", ele nos traz a série. Aqui entra um ponto importante, temos aqui o espaço. Eu precisaria fazer um encoding desse "What%20if". Repare que esse espaço entre as palavras, no nosso cliente nós precisaríamos fazer um encoding.
+
+[07:48] Só que, obviamente, o Postman já faz o encoding para nós, é claro que não precisaríamos disso. Mas repare que ele traz o mesmo resultado, se eu faço esse encoding, ele traz o mesmo resultado, ele identifica.
+
+[08:04] Então um detalhe: no cliente, quando você vai mandar um parâmetro para a query string, você tem que fazer esse parse. A maioria dos clientes já fazem, no navegador esse parsing já é feito automaticamente, mas alguns clientes - eu não conheço todos, eu não sei criar aplicativos, por exemplo, então é um detalhe para se atentar, que precisamos receber isso corretamente.
+
+[08:24] Mas, enfim, conseguimos implementar uma busca, o nosso filtro. Agora um outro detalhe: como eu comentei, nós temos aqui 6 seriados. Agora imagine que ao invés de 6 eu tivesse 60 ou 600. Isso teria dois problemas, o primeiro: ia levar um tempo para buscarmos no banco de dados - quanto mais dados mais demorado isso ficaria.
+
+[08:46] Segundo, imagine uma tela mostrando 600 séries. É inviável. Eu preciso, através da minha API, mandar essas informações divididas, por exemplo, talvez através de páginas. Eu tenho a minha primeira página com 5 séries, a segunda página com mais 5, e assim em diante. Então exatamente para implementar a paginação eu volto no próximo vídeo.
+

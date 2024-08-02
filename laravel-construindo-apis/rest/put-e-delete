@@ -1,0 +1,56 @@
+[00:00] Bem-vindos de volta. Vamos ver quais métodos precisamos implementar para poder atualizar uma série e remover uma série. Eu sei que são os métodos update e destroy, mas vamos ver como conseguimos relembrar isso, como conseguimos descobrir. Vou abrir o terminal e vou rodar o comando php artisan route:list.
+
+[00:23] Então eu tenho acesso a todas as rotas definidas. A rota de atualização ele manda para "series.update", ou seja, o método é o update, e a de remoção é em "series.destroy". Vamos criar essas duas rotas em SeriesController . Primeiro o update, ela espera na URL, um parâmetro que é a série, ou seja, vai receber o id da série.
+
+[00:44] E espera também o corpo da requisição, podemos inclusive utilizar aquele que tem uma certa validação, public function update(Series $serie, SeriesFormRequest $request). Agora o destroy, public function destroy(), ele espera somente, na URL, qual série vamos remover, (Series $series). Simples assim.
+
+[01:00] Agora vamos implementar. Primeiro vamos começar com a atualização. Eu tenho a série, já busquei ela do banco de dados, então posso fazer um $series->fill(), com todos os dados do request, ($request->all()), que, no nosso caso, será somente o nome.
+
+[01:14] Existe uma forma mais performática para eu não precisar buscar a série para depois preencher os novos campos, mas tudo bem, eu não estou pensando tanto em performance agora.
+
+[01:24] Em public function update() posso fazer o $series->save();. Armazenei essa série, posso retorna-la, return $series;. Vamos analisar, qual é o id da série que queremos atualizar? Uma "Outra série" tem o id 16.
+
+[01:39] Vou criar uma nova requisição no Postman selecionando o sinal de mais ("+") na parte superior, essa requisição será do tipo "PUT", será para "http://localhost:8000/api/series/16", que é o id. Ou seja, a minha API com o id 16, que é a minha série.
+
+[01:54] Eu vou passar um corpo - "body". Esse corpo estará em JSON, então, em "Text" do lado direito de "GraphQL" vamos escolher a opção "JSON", que vai ter somente o nome. O nome será "nome": "Outra".
+
+[02:08] Quando eu atualizar clicando no botão "Send" no canto superior direito do Postman, tenho a minha série cadastrada com o nome "Outra". Se eu venho na aba "Buscar Séries", funcionou a atualização. Inclusive deixa eu salvar essa requisição clicando no botão "Save" do lado direito superior do Postman, e em "Request name" inserir "Atualizar série".
+
+[02:22] Agora vamos implementar a de remover uma série. Deixa eu copiar essa URL "http://localhost:8000/api/series/16", selecionar a função "DELETE". É essa a requisição, se eu enviar, obviamente a nossa série não será removida ainda porque não tem nada no controller. Eu preciso implementar o método destroy. Só que o que acontece?
+
+[02:40] Repare o que eu fiz: eu tenho duas opções para remover uma série, como já vimos anteriormente. Quando tenho a model, posso chamar o método $series->delete(). Só que, para isso, o Laravel vai no banco de dados, vai buscar a série e depois remover.
+
+[02:55] Ou então eu posso somente receber o id e a partir desse id, chamar o método Series::destroy(), passando esse id, ($series);. Com isso ele vai remover a série.
+
+[03:06] Agora, o que eu retorno aqui? Qual resposta eu dou neste caso? Eu posso responder com aquele 204, de no content, ou seja, uma resposta vazia. Eu poderia fazer, por exemplo, return response(content ' ', status:204);, ou seja, uma resposta vazia com o status 204.
+
+[03:22] Mas o Laravel já tem um método para isso, que é o método return response()->noContent();. Ele faz exatamente aquilo, manda uma resposta vazia com o status 204.
+
+[03:30] Só que teremos um problema com o Postman, porque ele espera receber uma resposta diferente. Então eu vou dizer, nos meus cabeçalhos da requisição em "Headers", que aceito uma resposta do tipo "application/json".
+
+[03:46] Com isso eu sei que estou trabalhando com uma API, basicamente. Super simplificando: estou mandando, na requisição, essa informação a mais e o Postman não vai reclamar que essa resposta está vazia.
+
+[03:58] Isso é por causa de um bug, um problema que o próprio Postman tem. Se você estiver, por exemplo, fazendo uma requisição do seu aplicativo, você não precisa, necessariamente, enviar esse cabeçalho para a requisição funcionar.
+
+[04:13] Já falei bastante, vamos mandar a requisição clicando no botão "Send" no canto superior direito do Postman . Ok, resposta vazia, cabeçalho no content.
+
+[04:18] Quando eu venho na aba "Buscar Séries", não tenho mais aquela série, ela foi removida. Vamos salvar clicando no botão "Save" no canto superior direito do Postman, e em "Request name" digitar "Remover série".
+
+[04:26] Agora, falando sobre esse cabeçalho, vamos tirar um tempo para entendermos o que está acontecendo. Imagine que eu queira criar uma série. Eu mando, no nome da série, somente uma letra. Ou seja, isso não passa na nossa validação.
+
+[04:40] O Postman está mandando essa requisição e quando o Laravel recebe a requisição, ele não identifica que é uma requisição para uma API, que espera um JSON, esse tipo de coisa. Ele está mandando a requisição igual a um navegador mandaria, sem aquele "Accept application/json". Então, neste ponto, é um detalhe não só do Postman, mas do Laravel como um todo.
+
+[05:06] Se tenho alguma validação no meu controller, na minha requisição, preciso informar corretamente qual é o tipo dessa requisição para que a resposta da avaliação seja correta também.
+
+[05:18] Então nos cabeçalhos do Postman, eu vou informar: Laravel, eu aceito essa resposta como JSON. Agora o Laravel vai pegar aquela validação e devolver como JSON também.
+
+[05:29] Então repare que ele tem aqui os erros e tem uma mensagem. Dessa forma conseguimos trabalhar com a validação sem aqueles problemas que estávamos tendo de ser redirecionados para a tela de login, o que não faz o menor sentido em uma API. Ou seja, precisamos usar o HTTP corretamente. Basicamente é isso o que precisamos fazer.
+
+[05:48] Na resposta, se é um conteúdo em JSON, adicione o content-type; na requisição, eu espero que a resposta seja um JSON, adicione o accept.
+
+[05:58] Com isso temos o nosso CRUD, então o create, os dois read, eu tenho o update e eu tenho o delete. Com isso eu já tenho uma API Rest completa, com o CRUD.
+
+[06:09] Só que agora podemos começar a nos aprofundar em alguns conceitos, tanto do Laravel quanto de APIs. Por exemplo, se eu quiser buscar todas as temporadas de uma série, será que tem alguma coisa somente no Laravel ou Rest tem algum padrão que nos fornece? Qual URL vou usar, qual rota eu utilizo para seguir o padrão Rest?
+
+[06:29] Esse tipo de coisa. Se eu quiser marcar o episódio como assistido, que verbo posso usar utilizar. Eu já comentei que seria interessante mandar um patch. Então vamos bater um papo sobre esses assuntos para lapidarmos a nossa API, aprendendo mais conceitos tanto de Laravel quanto de Rest.
+

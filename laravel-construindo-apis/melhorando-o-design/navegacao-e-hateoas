@@ -1,0 +1,44 @@
+[00:00] Bem-vindos de volta. Nós vimos que essa ideia do Laravel de adicionar links na resposta é muito interessante. Então podemos, talvez, utilizar essa mesma ideia dentro da aplicação, ou seja, dentro do nosso data. Ou seja, quando eu estiver retornando os dados de uma série, eu posso também adicionar links.
+
+[00:23] Esses links terão, por exemplo, a URL para acessar as temporadas dessa série, para acessar a série em si, aquela URL específica dela, para acessar os episódios das séries, e assim em diante. Então podemos adicionar isso. Inclusive poderíamos fazer essa inclusão de diversas formas e tem uma recomendação, da própria documentação do Eloquent , que é utilizar um acessor. Ou seja, é algo que já aprendemos a fazer.
+
+[00:50] Eu não gosto dessa abordagem, mas essa é a abordagem sugerida pela própria documentação, então vamos dar uma analisada nela, e depois eu te mostro como eu provavelmente faria. Mas, vamos lá, eu vou acessar a minha série no arquivo Series e vou criar um acessor, public function, eu vou chamar de links().
+
+[01:09] Isso retornar um attribute, public function links(): Attribute. Já foi importado pelo PhpStorm, vamos retornar esse attribute, return new Attribute();. Repare que na documentação ele não faz absolutamente nada de mais, ele só retorna algum valor, não precisa ser especial. Então vamos passar o get no nosso código, que será uma função que retorna, e ela precisa retornar algo que será serializável em JSON.
+
+[01:36] Eu vou retornar um array, get: fn () => [],, porque é exatamente isso o que estamos utilizando em links na resposta do Postman, os links que o próprio Laravel retorna é um array, e dentro, cada um desses pode ser um array associativo. Vamos fazer exatamente isso. Agora, quais são os dados que eu terei aqui?
+
+[01:53] Como comentei, eu posso ter para as temporadas dessa série, para os episódios dessa série, para a série em si, essas são algumas das possibilidades. Na resposta no Postman ele não mostra, mas existe um outro padrão, que é bastante utilizado quando estamos adicionando links em APIs restful, que é colocar o tipo de relacionamento.
+
+[02:15] Por exemplo, se eu quero colocar um link para o próprio seriado, vou informar que relacionamento é self, ou seja, é para ela própria, para esse recurso mesmo, 'rel' => 'self',, e eu coloco a URL. No código eu vou adicionar a URL relativa, que é 'url' => "/api/series"- deixa eu colocar entre aspas duplas, para eu poder utilizar o id, "/api/series/{$this->id}". Com isso eu tenho o nosso primeiro link.
+
+[02:41] Vamos adicionar mais dois, que serão o link para seasons, 'rel' => 'seasons',, 'url' => "/api/series/{this->id}/seasons". E no terceiro para episodes, 'rel' => 'episodes',, 'url' => "/api/series/{this->id}/episodes". Então essa é a recomendação da documentação, que você crie um acessor.
+
+[02:59] Só que, além disso, não tem como o Laravel saber, na hora que for exportar, que ele precisa chamar esse método links, porque um acessor, ele é utilizado quando vamos, por exemplo, e pego a série, public function update, e faço $series->links;. Quando eu acessar esse atributo, aquele acessor será utilizado.
+
+[03:21] Mas como eu informo: Laravel, quando você for serializar esse JSON, adicione esse atributo também. Para isso eu posso ter uma propriedade chamada protected $appends = []. Aqui eu posso passar um array de várias coisas que eu quero adicionar, no caso será somente esse atributo ['links']. Agora vamos ver o que acontece no Postman quando eu fizer essa busca clicando no botão "Send" na aba "Buscar séries" de novo: eu tenho os meus links.
+
+[03:46] Eu tenho um link para a própria série, quando eu clico nele, o Postman já abre uma nova janela e eu consigo acessar a série em si. Quando eu clico no link "seasons", eu consigo ver todas as temporadas dessa série. Quando eu volto e clico em "episodes", consigo ver todos os episódios dessa temporada.
+
+[04:03] Repare que, de novo, através de um detalhe simples, uma implementação bem tranquila, nós adicionamos informações que podem ajudar o nosso front-end, o nosso cliente, na verdade. Então imagine que eu estou criando uma aplicação móvel, um aplicativo para Android, e eu tenho uma listagem de séries, e eu tenho um link para a série em si, para os detalhes da série. Ou então eu tenho um link para ver as temporadas da série.
+
+[04:28] Esse aplicativo, ele pode ler essa informação para saber como montar a URL, para ele não precisar supor ou ler a documentação, direto pela resposta ele já saberia. E, se no futuro eu modificar essa URL, eu posso modificar aqui direto, que o cliente já saberá ler daqui também. Isso é bem interessante.
+
+[04:49] Mas eu comentei que eu não faria dessa forma, porque eu estou unindo detalhes de banco de dados, que teoricamente é para isso que a model serve para mapear o banco de dados. Então eu estou juntando detalhes de banco de dados com detalhes de serialização, de exibição e etc.
+
+[05:06] Eu provavelmente separaria isso ou em uma classe que eu mesmo criaria, ou em algum pacote como esse. Esse pacote , ele se propõe a adicionar esse tipo de saída que mostra no código, onde você tem todos os relacionamentos. Para você configurar isso você cria uma classe separada, nessa classe você configura tudo certo, qual link será adicionado e etc.
+
+[05:30] Inclusive você pode pegar pelo nome da rota, você consegue fazer verificações, se o usuário pode acessar determinada funcionalidade ou não, essa é uma abordagem bem mais interessante na minha opinião. Mas eu implementei aqui a sugestão da documentação para não fugirmos muito do padrão que é o Laravel em si. Mas eu, Vinícius, recomendaria um pacote com esse.
+
+[05:52] Agora, antes de finalizar, quero chamar a atenção para essa sigla HATEOAS, que já comentei naquele vídeo de Rest, então vamos falar o que é isso. Eu não sei falar essa palavra, porque ela não é uma palavra, é um acrônimo, uma sigla, que significa Hypermedia As The Engine Of Application State.
+
+[06:13] Ou seja, hipermídia como motor do estado da minha aplicação. Eu vou utilizar hipermídia, ou seja, coisas além de texto - no meu caso, um link. Vou utilizar isso como motor de navegação para a minha API, como uma forma de entregar uma documentação viva, vamos dizer assim. Então essa é, super simplificando, a ideia desse conceito com esse nome gigante.
+
+[06:38] Claro que você pode pesquisar mais a fundo, ler alguns exemplos, em muitos dos exemplos você vai se deparar com uma propriedade links. Por isso que eu digo que, super simplificando, quando você facilita essa navegação para o cliente você já está utilizando a hipermídia como motor da sua aplicação.
+
+[06:55] Mas para não nos estendermos demais aqui, vou deixar a recomendação de que você pesquise, com muito empenho, sobre esse assunto, porque ele pode se estender, ele pode ser muito mais do que somente adicionar uma propriedade links nos nossos recursos. Enfim, já vimos bastante sobre como melhorar o nosso design.
+
+[07:14] Já falamos sobre busca quando implementamos um filtro, já falamos de paginação, agora esse tal hypermedia as the engine of application state. Com a nossa API já bem desenhada e com todas as funcionalidades, que me vem à cabeça, necessárias já implementadas, vamos fazer a autenticação.
+
+[07:31] Porque na nossa aplicação full stack, o usuário não consegue, por exemplo, marcar um episódio como assistido sem fazer login. Então como podemos fazer login em uma API? Vamos aprender isso no próximo capítulo.
+

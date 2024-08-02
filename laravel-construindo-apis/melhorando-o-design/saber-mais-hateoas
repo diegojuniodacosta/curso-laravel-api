@@ -1,0 +1,11 @@
+Nesta aula, nós ajudamos o cliente com informações sobre a navegação. Seja entre páginas ou entre recursos. Ou seja, enviamos informações além da mídia solicitada.
+
+Dados que não são somente texto, ou seja, imagens, vídeos ou como no nosso caso, links, são comumente tratados como hypermidia, ou hipermídia.
+
+A utilização de hipermídia como o motor de uma API RESTful é muito comum e amplamente utilizada. Para este tipo de técnica, se deu o nome de Hypermidia As The Engine Of the Application State, ou, HATEOAS.
+
+Este componente de uma API é o que diferencia o padrão REST de qualquer outro padrão de arquitetura. Fornecer informações para que o cliente consiga navegar entre os nossos recursos é extremamente útil e pode facilitar (e muito) a utilização da nossa solução.
+
+Link para o pacote HATEOAS mostrado na aula:
+
+Laravel-HATEOAS

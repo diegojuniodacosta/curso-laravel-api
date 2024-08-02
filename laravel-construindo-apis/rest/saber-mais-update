@@ -1,0 +1,7 @@
+Neste vídeo nós fizemos uma atualização na série através do método fill. O que aconteceu por baixo dos panos foi: uma busca usando SELECT no banco de dados e depois, com o ID recuperado, foi feito um UPDATE. Nós podemos fazer isso em uma única query, sem o SELECT. Segue uma possível solução para isso:
+
+public function update(int $series, SeriesFormRequest $request)
+{
+    Series::where(‘id’, $series)->update($request->all());
+    // retorno de uma resposta que não contenha a série, já que não fizemos um `SELECT`
+}

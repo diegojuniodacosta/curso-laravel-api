@@ -1,0 +1,24 @@
+[00:00] Parabéns por terem chegado ao final de mais um treinamento de Laravel. Neste nós criamos uma API, então já começamos entendendo como funciona esse arquivo de rotas de API e como ele é diferente do arquivo de rotas web. A partir daqui nós começamos a criar a nossa API.
+
+[00:17] A nossa primeira rota foi bem simples, mostrando todas as séries, e fomos evoluindo até ter um controller de séries com bastante coisa. Nesse processo nós entendemos o que é o Rest. Utilizando os padrões do Rest nós fizemos a criação de um CRUD na nossa API. Com esse CRUD criado, fomos evoluindo.
+
+[00:36] Aprendemos mais sobre o Eloquent, entendemos sobre alguns detalhes do query builder, entendemos como ele faz para buscar as models, como podemos fazer de uma forma um pouco mais controlada. Falamos até sobre exception handling ou error handling, como podemos lidar com erros.
+
+[00:51] Falamos sobre sub-recursos, como esse acesso a recursos relacionados é um padrão bastante conhecido do Rest e como pudemos utilizar isso aqui. Vimos sobre o verbo patch, que tem bastante polêmica sobre como ele ou o put são utilizados, na nossa API estamos utilizando os dois.
+
+[01:13] Falamos sobre acessors, mutators, fizemos um cast no nosso episódio, então estamos utilizando o cast para booleano. Então pudemos nos aprofundar bastante também em conceitos de Laravel, além de conceitos genéricos de API. A partir daí, nós melhoramos ainda mais a nossa API fazendo busca, ou seja, filtramos os seriados por nome, implementamos paginação.
+
+[01:35] E chegamos naquele nome grande de hypermedia as the engine of application state. Nós adicionamos alguns links - de novo, utilizando os acessors do Laravel. No final, falamos sobre segurança. Eu deixei um desafio bem grande para você, de implementar toda a autenticação - com o JWT, sem a ajuda do Laravel.
+
+[01:57] E depois eu implementei com o Sanctum, que é uma biblioteca que já vem, por padrão, com o Laravel. Ela já te fornece um middleware que faz a verificação se um token está válido e pega o usuário a partir desse token. Mas, além disso, ela também permite, obviamente, criar esse token.
+
+[02:13] Então vimos como criar esse token e, no processo de descobrir o usuário, eu citei alguns problemas interessantes. Vale a pena dar uma conferida em todos esses recursos extras.
+
+[02:24] Acabamos falando um pouco também de autorização, além de autenticação. Nesse caso, podemos ter habilidades nesse token e verificar se um token possui as habilidades depois, em um momento futuro.
+
+[02:35] Enfim, vimos muita coisa, coisas bastante interessantes inclusive. Se você gostou deste treinamento, mas ficou com alguma dúvida, não hesite, abra uma dúvida no fórum, eu tento responder pessoalmente sempre que possível. Mas, quando eu não consigo, temos uma vasta comunidade de moderadores, alunos e instrutores, alguém conseguirá te ajudar.
+
+[02:56] Te convido também para fazer parte do Discord, onde essa interação é um pouco mais interativa, vamos dizer assim, é um pouco mais rápida. Lá tem bastante gente aprendendo coisas bem diferentes também, é bem interessante fazer parte disso.
+
+[03:08] Mais uma vez eu espero que você tenha gostado, abra dúvida no fórum se tiver ficado alguma coisa não muito clara. Mais uma vez, parabéns por ter chego até o final desse treinamento. Espero te ver em muitos outros treinamentos aqui da Alura. Um forte abraço.
+

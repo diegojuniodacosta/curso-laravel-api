@@ -1,0 +1,84 @@
+[00:00] Bem-vindos de volta. No último vídeo comentei que íamos buscar uma única série. Mas antes, provavelmente você percebeu que eu usei o json(Series::create($request->all()) em SeriesController ao invés de utilizar aquele nosso repositórios que já temos, que criar as temporadas, os episódios e etc.
+
+[00:15] Então vamos passar a utilizar ele para já termos tudo criado com a mesma regra que tínhamos antes. Vou recebê-lo no início, como public function __construct(private SeriesRepository $SeriesRepository). Salvei na propriedade, e eu terei no store(), o $this_>seriesRepository->add() a partir deste ($request).
+
+[00:33] Com isso eu não preciso mais do Series::create, eu posso trazer para cá, ->json($this->seriesRepository->add($request)), 201);.
+
+class SeriesController extends Controller
+{
+        public function __construct(private SeriesRepository $seriesRepository)
+    {
+    }
+
+        public function index()
+    {
+        return Series::all();
+    }
+
+         public function store(SeriesFormRequest $request)
+    {
+        return response()
+            ->json($this->seriesRepository->add($request), 201);
+    }
+}Copiar código
+[00:38] Algumas considerações que já fizemos anteriormente: o ideal seria não passar esse request, mas sim um objeto mais bem definido, com o que ele precisa. Além disso, precisaríamos, seria o ideal, adicionar a validação nesta requisição SeriesFormRequest, para termos o seasons quantity e o episodes per season.
+
+[00:57] Inclusive fica de desafio para você pelo menos implementar essa validação. Mas vamos nessa, agora que já temos isso implementado, vamos criar um novo post no Postman passando esses dados no corpo.
+
+[01:10] Eu vou chamar de outra série outra, "nome": "Outra série". Esta série, ela terá a "seasonsQtdy": 8, serão 8 temporadas.
+
+[01:24] Em "episodesPerSeason": 13, serão 13 episódios por temporada. Só isso, quando selecionar o botão send, ele traz os dados da série que foi criada, mas também traz os dados da temporada.
+
+[-1:38] O que acontece? Por que ele traz esses dados? Porque quando estamos inserindo, utilizando o nosso Eloquent series repository, acessamos as temporadas dessa série, que já inserimos.
+
+[01:51] Por isso que isso, $serie->seasons, já fica carregado na nossa série e então já é enviado para a resposta. Eu não vejo nenhum problema nisso, então eu vou manter. Mas, se isso incomodar em algum momento, podemos retirar esse relacionamento sem problema nenhum.
+
+[02:05] Continuando, agora vamos efetivamente buscar uma única série, vamos buscar uma série específica. Por exemplo, essa série que acabamos de criar, com o id 12.
+
+[02:13] Em vez de vir no Postman e buscar todas e séries encontradas com o id 12, vou criar uma nova requisição para "/series/12" selecionando o mais ("+") na parte superior direita da tela, que será o id.
+
+[02:23] Quando eu acessar esse endereço selecionando o botão "Send" do canto superior direito do Postman, eu tenho, obviamente, um erro, porque eu tenho a rota definida, mas não tem o método, então ele nos mostra que esse método show não existe.
+
+[02:32] Só que caso eu não tivesse essa mensagem de erro, ou caso simplesmente queira ver todas as rotas que estão definidas, como eu poderia fazer, já que eu estou utilizando esse ApiResource, eu não estou definindo rota por rota? Uma forma de visualizarmos isso é através do comando php artisan route::list.
+
+[02:52] Isso vai mostrar todas as nossas rotas, inclusive as que o Breeze registrou. Mas, no caso de API, nós temos essas rotas e é para "api/series/" algum id, é essa rota, a "series.show" que chama o método show. Entendido isso, vamos criar o método show em SeriesController , public function show(Series $series) e simplesmente retorna essa série, return $series.
+
+public function show(Series $series)
+    {
+        return $series;
+    }Copiar código
+[03:15] Simples assim. Então quando acesso no Postman clicando no botão "Send", tenho no corpo os dados da série. "E se eu quisesse já retornar todas as temporadas e os episódios?"
+
+[03:27] Eu posso, ao invés de receber a série em SeriesController , show (Series $serie), posso receber o id dessa série, show(int $series) , e fazer um Series::with(relations: 'seasons')->get();, por exemplo.
+
+public function show(int $series)
+    {
+                $series = Series::with('seasons')->get();
+        return $series;
+    }Copiar código
+[03:37] Isso vai nos retornar todas as séries, $series = Series::with(relations: 'seasons')->get();, com as suas temporadas.
+
+[03:44] Quando eu acesso no Postman clicando no botão "Send" no canto superior direito, tenho todas as séries com as temporadas. Mas eu ainda não tenho os episódios. Quando tenho esses relacionamentos encadeados, eu posso também utilizar o eager loading dessa forma, com o (relations: 'seasons.episodes').
+
+[04:01] Com isso, ele vai trazer, de cada série, de cada temporada também, os seus episódios. Só que provavelmente você viu antes de mim que eu estou buscando todas as séries e não uma série em específico.
+
+[4:13] Então posso utilizar o whereId com esse series que estamos utilizando, e eu chamo o método with, $series = Series::whereId(series)->with('seasons.episodes')->get();.
+
+[04:25] Quando eu atualizar o Postman, agora ele trouxe somente o primeiro. Vamos lá, o que nós fizemos? Nós buscamos todas as séries que o id seja esse que passamos por parâmetro, e adicionamos o eager loading para trazer as temporadas e os episódios.
+
+[04:51] Só que eu estou buscando ainda uma coleção. Repare que eu estou trazendo um array, e eu não quero esse array, porque eu só tenho um elemento sempre. Então ao invés de utilizar o método ->get() eu posso utilizar o método ->first().
+
+[05:04] De novo, seria muito interessante, seria interessante instalarmos um plugin de Laravel para ter esses auto completes. Isso ajuda bastante, mas eu não vou instalar, para caso você não tenha, você ter os mesmos problemas que eu.
+
+[05:21] Vamos lá, clicar no botão "Send" no canto superior direito da tela do Postman e agora sim eu tenho somente a minha série sendo buscada.
+
+[05:26] Se eu buscar a série com id "2" colocando o "/2" no final da URL no Postman, temos o Grey's Anatomy com todas as informações de temporadas e episódios.
+
+[05:35] Eu não vou trazer as temporadas e episódios, vou remover with do código. Na verdade, eu vou remover essa parte toda e receber somente public function show(Series $series).
+
+ public function show(Series $series)
+    {
+        return $series;
+    }Copiar código
+[05:43] Mas agora você já viu como fazer o eager loading de vários relacionamentos, então o Eloquent nos traz isso. Nossa busca foi implementada, agora falta atualizarmos uma série, por exemplo trocar o nome, essa série "Outra série", eu quero poder remover também. Falta atualizarmos e removermos. Vamos tentar fazer isso tudo em um vídeo só, daqui a pouco.
+

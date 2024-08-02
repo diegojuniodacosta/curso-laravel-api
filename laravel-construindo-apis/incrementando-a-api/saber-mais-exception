@@ -1,0 +1,20 @@
+Existe um conceito nos frameworks PHP de Exception Handler. São códigos que vão capturar exceções de forma global e tomar as ações necessárias.
+
+Seria perfeitamente possível criar um exception handler para recuperar a exception de model não encontrada, mas o Laravel já facilita isso com um método de renderizar exceções.
+
+Em app/Exceptions/Handler.php nós temos uma classe que seria a base para criarmos handlers, mas nela nós podemos implementar um método chamado render que cuida de devolver uma resposta em caso de exceção.
+
+Para termos um 404 retornado corretamente em JSON, poderíamos ter algo como:
+
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+// ...
+
+public function render($request, Throwable $exception)
+{
+    if ($exception instanceof ModelNotFoundException && $request->wantsJson()) {
+        return response()->json(['message' => 'Not Found!'], 404);
+    }
+
+    return parent::render($request, $exception);
+}

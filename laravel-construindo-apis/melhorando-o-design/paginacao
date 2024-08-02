@@ -1,0 +1,32 @@
+[00:00] Bem-vindos de volta. Vamos implementar a paginação. A paginação é um conceito relativamente complexo de se implementar. Porque, o que acontece? Nós precisamos conhecer o total de elementos que temos e irmos paginando em cima deles. Ou então precisamos definir um limite por página, por exemplo, vamos dizer que teremos 5 itens em cada página.
+
+[00:21] Então nós vamos fazer uma query, por exemplo, informar que eu quero pegar de series, eu vou pegar todas, só que limitando, colocando um limit 5, por exemplo, return Series::all()->limit(5);, alguma coisa do tipo no arquivo de SeriesController. Então nós precisamos - e pensando em SQL, vamos lá. Eu teria um 'SELECT *FROM series LIMIT 5';. Ou, dependendo do seu banco de dados, seria TOP 5, alguma coisa do tipo.
+
+[00:49] Só que como eu vou para a segunda página? Esse é o ponto que fica mais complexo. Alguns bancos de dados possuem um LIMIT 5 OFFSET. Ou seja, eu vou para a segunda página, eu quero somente 5 itens também, mas começando do quinto elemento. Agora, outros bancos de dados não possuem esse offset, então eu precisaria, por exemplo, armazenar qual foi o último id da página anterior.
+
+[01:15] E, nesta parte, fazer um WHERE ID > LIMIT 5, maior do que o último id da página. Então repare como dependendo de como vamos implementar, a paginação pode se tornar um assunto bastante complexo. Inclusive eu recomendo muito que você pesquise como implementar paginação e várias estratégias de paginação diferentes.
+
+[01:32] Só que como estamos utilizando o Laravel, vamos paginar utilizando o Laravel. Aqui vem a boa notícia de que é muito simples fazer paginação com o Laravel, eu não preciso de nenhum desses conhecimentos de banco de dados e etc. Tudo o que eu preciso é ao invés de return Series::all(), utilizar um método return Series::paginate().
+
+[01:50] Ou então, quando eu estou fazendo alguma query, ao invés de ->get(), eu tenho o ->paginate(). Para melhorarmos um pouco isso, terei a minha query, onde será $query = Series::query();. Se o request não tiver o nome, if ($request->has(key:'nome')) - ou melhor, se ele tiver o nome, vou tirar o ponto de exclamação ("!"), vou colocar que essa minha query tem um $query->where(columns:'nome', $request->nome).
+
+[02:19] Então se a query tiver o nome, tiver a busca, nós adicionaremos na query. Ou seja, se a query string da URL tiver um nome, vamos adicionar na query SQL, no query builder essa busca. No final, simplesmente faço um return $query->get(). Ou seja, eu não estou trabalhando com a paginação ainda, só para refatorarmos o nosso código, vamos garantir que ele continue funcionando.
+
+[02:44] No Postman, se eu busco sem nada, ele traz todas as séries, se eu busco com um nome, ele traz somente o nome que eu busquei. Agora como eu tenho a minha query sendo montada e eu busco de um lugar só, eu posso utilizar o return $query->paginate(). Eu posso passar, por parâmetro, algumas informações: quais colunas eu vou buscar dessa query, qual o nome dessa página, etc.
+
+[03:05] Mas o principal é esse primeiro parâmetro, que é quantos elementos, quantos recursos, quantas models - no caso, quantas séries - eu vou terei por página. Vamos adicionar 5 séries por página, return $query->paginate(perPage:5). Quando eu - deixa eu tirar esse filtro do Postman.
+
+[03:20] No Postman quando eu acessar com a URL "http://localhost:8000/api/series" e selecionando o botão "Send" na aba "Buscar séries", repare que mudou bastante a resposta. Agora o meu array de séries, ele vem dentro de um data. Só que além desse data, o Laravel adicionou um monte de coisas. Ele adicionou qual é a minha página atual, qual é o link para a primeira página, o link para a última página, qual é o número da última página.
+
+[03:39] Ele adicionou um array de links para ajudar na navegação do nosso cliente, com um link para a página anterior, mostrando que não existe, com um link para a página 1, um link para a página 2, depois um link para a próxima página, que é o mesmo da página 2. Repare que ele colocou bastante coisa, ele já trouxe um monte de informação.
+
+[03:57] Qual é a URL da próxima página, qual é o caminho disso que eu estou buscando, quantos elementos eu tenho por página, até qual elemento - ou seja, quantos elementos eu trouxe aqui - e qual é o total. Caso eu queira ir para a segunda página, é um parâmetro. o Laravel já entende que esse parâmetro está chegando e consegue fazer o paginate funcionar.
+
+[04:18] Então agora, na página 2, eu tenho somente a última série. Ele mostra que partindo do sexto elemento, ele tem um total de 6. Repare que diversas informações já vieram para nós. O Laravel simplesmente nos enviou toda essa paginação. Isso é muito importante ter esse tipo de facilidade, porque paginação é um conceito muito importante.
+
+[04:40] Então se precisarmos pesquisar a melhor forma de implementar, podemos acabar nos desviando do foco e implementando uma coisa que já poderia ser genérica para todo mundo. É muito interessante que o Laravel já tenha isso. Só que um detalhe muito interessante, que eu gosto muito nessa paginação, é esse elemento de links.
+
+[05:02] Ou seja, o Laravel por si só já nos traz algo além de texto, algo além do nosso recurso, que é exatamente o conceito de hypermedia, trazer algo além da nossa mídia, enfim. Com isso aqui ele ajuda o cliente, ele faz com que a nossa API ajude o cliente a navegar na nossa API.
+
+[05:22] Então ele está permitindo a navegação facilitada. Vamos bater um papo bem rápido no próximo vídeo, sobre o que mais nós podemos fazer para facilitar a navegação dos nossos clientes também.
+

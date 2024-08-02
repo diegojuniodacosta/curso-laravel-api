@@ -1,0 +1,60 @@
+[00:00] Bem-vindos de volta. Vamos implementar uma rota para fazermos o login na nossa API. Eu vou fazer uma rota, pode ser um get ou, no caso, um post, é o mais ideal, porque nós vamos enviar informações para ter esse login, estamos criando um registro de usuário, basicamente.
+
+[00:17] Vamos fazer um Route::post(url: '/login', function () {});. Eu preciso, de alguma forma, buscar os dados do usuário, então eu precisarei do (Request $request). Essas informações virão do nosso cliente. Aqui eu tenho algumas possibilidades, as minhas credenciais ou, vamos pegar em inglês, $credentials =, serão do = $request->only().
+
+[00:41] Então precisamos, pelo menos, de e-mail e senha, (['email', 'password']). Vamos fazer um dd($credentials); para testarmos e irmos fazendo passo a passo. No Postman em meu "API Laravel" eu vou criar uma requisição simplesmente para esse "localhost:8000/api/login".
+
+[01:18] Vamos passar os dados, será um JSON. Se eu não me engano, o e-mail que tínhamos cadastrado era "email": "email@example.com" e a senha, o password é "password": 12345678, eu acredito e alterar o verbo para "post". Vamos lá, quero ver se isso está chegando corretamente para o nosso back-end. Cadê a visualize, "Raw"
+
+[01:42] Vamos lá, com o preview temos o array com os dados corretos. Aqui temos algumas opções. Nós podemos, por exemplo, tentar buscar um usuário, vamos voltar para o código e incluir: \App\Models\User::whereEmail($credentials['email']), o e-mail é um array.
+
+[02:09] E também \App\Models\User::whereEmail($credentials['email'])->wherePassword(\Illuminate\Support\Facades\Hash::make($credentials['password'])). Só que isso, caso você tenha assistido aquele meu vídeo sobre como lidar com senhas, sabe que isso não vai funcionar, mas só para testarmos.
+
+[02:32] Vamos fazer um dd($user). Isso não vai funcionar, mesmo que a senha esteja correta. Vamos lá, ele pegou o query builder, então vamos pegar ->first(). Quando eu enviei, null, porque eu estou criando um hash novo e não é isso o que fazemos. Ou seja, eu preciso buscar o usuário e depois verificar a senha.
+
+[02:52] Então devo ter um hash verifier, um hash check, algum método aqui, um \Illuminate\Support\Facades\Hash::check(). Então vou passar o ($credentials['password'],, ou seja, o que foi enviado pela requisição e o , $user->password). Então eu vou verificar e isso deve me retornar um verdadeiro, caso tudo esteja certo.
+
+[03:12] Beleza, true. Com isso eu consigo fazer o quê? Buscar o usuário a partir do e-mail e verificar se a senha está certa. Se estiver errada - deixa eu importar o Hash::check, se if(Hash::check($credentials['password'], $user->password) === false). Se isso retornar falso, eu já retorno uma resposta de unauthorized, provavelmente já tem, forbidden.
+
+[03:39] Eu achei que o Laravel já tinha uma função que cria uma resposta de não autorizado, mas não, então eu vou escrever return response()->json(data:'Unauthorized', status:401), se eu não me engano, é isso. Então se a senha estiver errada, ele vai simplesmente retornar um JSON dizendo que está errada - ou o e-mail também.
+
+[04:00] Vamos lá no Postman clicar no botão "Send" no canto superior direito, e o retorno é "Unauthorized", um 401, que é unauthorized. Se eu mandar a senha correta, ele encontra o usuário. E se eu mandar o e-mail errado? Deixa eu trocar o M por um N em example, ele vai ter um problema, porque estamos tentando acessar a propriedade password em nulo.
+
+[04:24] Eu poderia verificar: se o usuário for nulo ou se a senha estiver incorreta, eu acrescento no if, if ($user === null || Hash::check. Só que vou deixar um Para Saber Mais para mostrar o motivo de isso ser um problema também. Mas esse código resolve o problema. Com isso estamos propensos a timing attack, é um ataque mais sofisticado, mas é um ataque.
+
+[04:45] Com isso conseguiríamos ter o nosso usuário.Só que ao invés de fazer isso tudo, eu vou fazer um attempt, aquele que já conhecemos, o attempt com essas credentials, \Illuminate\Support\Facades\Auth::attempt($credentials);. Isso nos retorna um booleano, então posso verificar se essa linha for falsa if (\Illuminate\Support\Facades\Auth::attempt ($credentials) === false);, eu retorno - não devia ter apagado o código, deixa eu copiar aquela resposta que eu já criei.
+
+[05:09] Agora sim, vou retornar essa resposta, return response ()->json(data: 'Unauthorized', status:401);. Caso contrário eu posso pegar o usuário a partir de $user = \Illuminate\Support\Facades\Auth::user();.
+
+[05:22] Inicialmente ele vai salvar na sessão, mas essa sessão será ignorada. Ou seja, eu estou utilizando a \Facades que salva em sessão, mas eu não utilizo essa sessão em outra requisição, em outro request.
+
+[05:34] Por isso não é um problema fazer desta forma. Então vamos continuar, ver se agora eu tenho acesso ao usuário. Tenho acesso ao usuário voltando para o Postman e clicando no botão "Send", tenho acesso ao usuário em "Preview".
+
+[05:44] Dessa forma eu implementaria, porque esse attempt, ele já faz as verificações de forma que nos previne daquele timing attack. De novo, vou deixar um Para Saber Mais, porque é um ataque relativamente complexo.
+
+[05:55] Agora o que eu quero fazer - deixa eu importar o Auth::attempt. O que eu quero fazer é criar um token para esse usuário, quero gerar um token, depois quero receber esse token e validar no meu middleware. Se você reparar, nós já temos um middleware chamado de (middleware:'auth:sanctum').
+
+[06:13] No nosso usuário - deixa eu abrir a model de user, nós temos um use HasApiTokens. Tudo isso faz parte de um pacote muito interessante - deixa eu abrir onde está a documentação, que é do Sanctum . Esse pacote, que já vem instalado no Laravel por padrão, basicamente permite que você crie API tokens, ou tokens de API, para trabalharmos com autenticação.
+
+[06:43] Repare, caso você não tenha o Sanctum instalado ainda, é esse comando: composer require laravel/sanctum, fazer o publish. Mas, no nosso caso, já temos. Inclusive repare que ele pede para rodar o migrate porque nas nossas migrations - vamos em "database > migrations" - temos aqui os detalhes de "personal_access_tokens", ou seja, os tokens pessoais de acesso.
+
+[07:08] Mas, basicamente, o que o Sanctum faz é armazenar no banco de dados um token que o usuário gerou. Ou seja, um usuário foi identificado, geramos um token para ele, isso é armazenado no banco, e esse token continua válido. Podemos colocar uma expiração para ele, quando ele foi utilizado e etc. Ou podemos simplesmente remover.
+
+[07:28] Então vamos lá, como podemos trabalhar com tokens? Tendo o usuário em mãos, o nome do método é create token. Nós podemos dar um nome para esse token, mas não precisaremos disso. Vamos lá em "personal_access_tokens" e digitar $user->createToken(). Eu posso dar um nome para esse token, vou chamar de token mesmo, (name: 'token');. Isso não é importante no nosso cenário.
+
+[07:52] Com isso eu tenho o token, $token = $user->createToken, eu posso fazer o que eu quiser com ele, inclusive simplesmente retornar esse token como texto puro, que é exatamente o que eu vou fazer. Eu vou retornar um return response()->json() com esse (token->plainTextToken). Ou seja, eu estou simplesmente retornando esse token como texto puro.
+
+[08:16] Agora vamos no Postman fazer o login clicando no botão "Send". Eu tenho agora o token, que estamos mandando como uma string qualquer. Agora o que eu quero fazer é exigir que esse token seja utilizado nas outras URLs. Para isso, basta utilizar esse Route::middleware(middleware: 'auth.sanctum'), só isso.
+
+[08:35] Vamos lá, vou copiar essa linha e vou colar para fazer aquele nosso group, como já conhecemos. Agrupando isso tudo, vou limitar o acesso de todos esses recursos. Ou seja, só conseguimos acessar qualquer coisa na API tendo feito login, porque esse middleware do Sanctum já pega o token do usuário, encontra o usuário a partir do token e conseguimos acessar tranquilamente tudo o que precisamos.
+
+[09:04] Então vamos continuar a fazer o nosso login, já tenho o token salvo. Agora, se eu tentar acessar, por exemplo, o "Buscar Séries", quando eu tento acessar temos um problema, ele está até mandando para aquele formulário de login. De novo, vamos adicionar o cabeçalho "Accept", "application/json" para informarmos que é uma API, e ele nos mostra: você não está autenticado.
+
+[09:31] "Vinícius, como posso me autenticar?". Existem várias formas, mas a mais comum é você adicionar um cabeçalho "Authorization" e informar "Bearer:" e esse token, o token que tínhamos copiado, então deixa eu copiar e colar em "Bearer". Esse bearer significa portador, isso quer dizer que esse token é de quem está enviando, do portador. É um tipo especial de token.
+
+[10:03] Dessa forma eu ainda vou ter um problema, só que posso utilizar uma forma mais tranquila para eu não precisar ver se eu definir essa variável com o formato correto, se eu escrevi esse bearer escrito errado. Para o Postman nos ajudar eu venho em "Authorization", clico em "Bearer Token". No espaço na frente de "Token" eu colo o token. Bem mais simples.
+
+[10:25] Dessa forma agora conseguimos acessar sem problema. Então repare que ele vai adicionar um token nos cabeçalhos, no Laravel, aquele middleware consegue recuperar esse cabeçalho, esse cabeçalho possui o token e esse token contém o usuário, porque ele está armazenado no banco de dados, então o Sanctum vai no banco de dados, pega o usuário e nos entrega, permitindo esse tipo de autenticação.
+
+[10:54] Agora temos todas as nossas rotas protegidas. Mas quero mostrar mais um detalhe do Sanctum, porque não só a autenticação é muito simples, mas a autorização também, é isso o que eu quero te mostrar no próximo vídeo.
+

@@ -1,0 +1,42 @@
+[00:00] Bem-vindos de volta. Vamos resolver esse problema de algumas formas diferentes. Então vamos pegar o meu episódio em "app > Models > Episode", quero utilizar uma forma diferente de acessar aquele meu tributo. Posso utilizar o que o Laravel chama de acessor. Nós temos na parte de documentação do Eloquent, o "Eloquent: Mutators & Casting" .
+
+[00:22] Então isso é relacionado com model. Aqui nós podemos definir um acessor clicando em "Defining An Accessor", ou seja, um assessor, uma forma de acessar algum atributo. Eu quero acessar o atributo watched, então essa última sintaxe é a que eu vou usar. Ela é relativamente complexa à primeira vista, então vamos passar a analisá-la rápido.
+
+[00:40] Primeiro vamos criar a função no projeto em Episode, que será o assessor, a forma de acessar o atributo watched. Sempre que tentar buscar watched é essa função que será chamada. Repare que o Laravel não deixa ela como pública na documentação, então, por padrão, vamos deixar ela protegida também, protected function watched():.
+
+[00:59] Ela retorna um : Attribute. Vamos ver de onde vem essa classe na documentação, que vem de "Illuminate\Database\Eloquent\Casts\Attribute", que foi exatamente de onde o PhpStorm importou para nós.
+
+[01:12] Então vamos lá, precisamos retornar um return Attribute::make(), ou então um return new Attribute(). Os dois são sinônimos, vamos dizer assim. Eu prefiro com essa última sintaxe.
+
+[01:28] Vamos lá, aqui eu tenho dois possíveis parâmetros, um para recuperar o dado, que é o que chamamos de acessor, e outro para definir esses dados, que é o que chamamos de mutator. É como se fossem getters e setters, inclusive são esses os nomes dos parâmetros. O primeiro parâmetro é get e o segundo é set.
+
+[01:50] Mas, se você quiser definir só um, graças aos parâmetros nomeados do PHP, você pode definir só um. Mas vamos definir somente o get, vamos utilizar o parâmetro nomeado. Aqui eu posso definir uma função, inclusive pode ser uma função completa ou somente uma short closure, caso eu queira.
+
+[02:08] Essa função só precisa retornar o que eu quero representar com esse atributo. Então vamos deixar um pouco mais claro: essa função será chamada sempre que eu tentar acessar o atributo watched. Sempre que eu acessar para ler, essa função será chamada passando o watched por parâmetro. Então eu posso retornar ele como booleano, get: fn ($watched) => (bool) $watched.
+
+[02:36] Porque se for o número 0, ele vai retornar falso, se for o número 1, ele vai retornar verdadeiro. Se eu voltar no Postman e tentar acessar de novo, agora já temos o verdadeiro e o falso. Essa é uma forma de implementarmos. De novo, caso eu quisesse receber também, alterar a forma como isso é atribuído, ou seja, deixa eu explicar um pouco melhor.
+
+[02:56] Deixa eu voltar para as rotas. Se quando eu fizesse esse código $episode->watched = 1;, se eu quiser executar alguma coisa e transformar esse 1 para booleano também, eu posso. Basta definir a função set: fn(). Aqui será o parâmetro que recebemos, ou seja, neste exemplo seria o número 1.
+
+[03:14] Eu posso, de novo, fazer o cast, $watched) => (bool) $watched,. O que eu retornar nessa função será efetivamente armazenado no atributo. Dessa forma tenho o cast tanto na hora de salvar quanto na hora de recuperar. Nós conseguimos implementar. Mais uma vez, isso não deve trazer nenhuma diferença, tenho esse meu cast implementado.
+
+[03:42] Mas essa funcionalidade, esse mutator e acessor, deve ser utilizado quando realmente temos alguma regra. Por exemplo, se quero transformar todos os nomes das minhas séries em letra maiúscula, ou adicionar um hashtag antes do número do episódio, para mostrar "#1", "#2". Para esse tipo de coisa nós utilizaríamos um acessor ou um mutator.
+
+[04:07] Mas para esse caso, só precisamos de um cast. Por isso posso vir em "Episode", remover isso tudo o que fizemos - repare, tudo o que eu estou fazendo é um typecast, ou seja, eu estou fazendo uma mudança de tipos, pegando um inteiro e transformando em um booleano.
+
+[04:23] Se é só isso que eu preciso, posso informar em class Episode o protected $casts = []. O que esse atributo, ele contem, qual é o valor dele? É um array associativo, onde cada atributo é mapeado para algum tipo. Por exemplo, o atributo watched é mapeado para bool, ou boolean, que agora, honestamente, não me lembro, 'watched' => 'boolean'.
+
+[04:44] Mas podemos ou testar e ver o que acontece - no Postman selecionado o botão "Send" na aba "Episódios de séries", funcionou, é boolean. Vamos ver se o => 'bool' também funcionaria.
+
+[04:52] Ambos funcionam, perfeito. Ou, caso eu não queira ficar testando, posso dar uma olhada na mesma página da documentação, onde temos "Attribute Casting". Aqui ele já nos mostra quais são os possíveis. Repare que, pela documentação, nem tem só bool, o ideal seria o boolean.
+
+[05:08] Mas, tudo bem, funcionou com o bool está ótimo para nós. Mais uma vez, vamos acessar os episódios, o watched está vindo como booleano. Se eu remover isso e atualizar, ele vem como inteiro. Então conseguimos implementar um cast nos models do Eloquent.
+
+[05:29] Mas o principal deste capítulo, já que cast é algo bastante simples, são os mutators e acessors. Recomendo dar uma lida nessa parte da documentação, mas, basicamente, a ideia é essa, se preciso de um getter ou um setter para o meu atributo, vou utilizar um mutator ou um acessor. Essa é a ideia por trás de mutators e acessors no Laravel.
+
+[05:50] Agora que já temos a aplicação relativamente lapidada, temos sub-recursos, temos o patch aqui - que inclusive eu vou salvar como "Assistir episódio". Então já temos todas essas informações na API, agora vamos dar uma incrementada nela, vamos melhorar o design da API.
+
+[06:10] Por exemplo, podemos adicionar busca, podemos pensar em performance, até para o lado do cliente, quem sabe, podemos dar uma facilitada também para o lado do cliente.
+
+[06:22] Vamos melhorar o design no geral, melhorar o projeto de API para facilitar, quem vai consumir a nossa API, a fazer o seu trabalho, a consumir como ele deve consumir. Enfim, já falei bastante, te vejo no próximo capítulo para melhorarmos o design da nossa API.
+

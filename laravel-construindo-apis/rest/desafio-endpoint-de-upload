@@ -1,0 +1,7 @@
+Trabalhar com arquivos usando APIs pode ser uma tarefa complexa. Uma das abordagens mais flexíveis é possuir um endpoint específico para receber arquivos e armazená-los no sistema de arquivos desejado (seja local, s3, etc) e devolver o caminho para essa imagem.
+
+Esse caminho nós podemos enviar para o endpoint que insere a série, por exemplo.
+
+Este endpoint deve receber um conteúdo binário em seu corpo via POST, que será somente o arquivo. Ele pode também receber pela URL algum caminho para criar uma pasta (ou equivalente em outros sistemas de arquivos). Algo como:
+
+/upload?path=series-cover

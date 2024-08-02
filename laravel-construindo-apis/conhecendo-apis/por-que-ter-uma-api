@@ -1,0 +1,17 @@
+[00:00] Bem-vindos de volta. Antes de criarmos a API, vamos entender porque iríamos querer criar uma API. Se você não sabe o que é uma API, pausa este vídeo e assista o Para Saber Mais: O que é uma API? , que tem logo depois dessa atividade, que é um vídeo explicando o que é uma API.
+
+[00:18] Agora, se você já sabe, vamos entender o propósito de termos uma API, porque iríamos querer. Nós criamos um sistema para gerenciar as séries, quais episódios já assistimos e etc.
+
+[00:29] Nós temos aqui esse sistema web, feito de uma forma, com um layout, com um visual. Só que imagine que eu queira criar um aplicativo móvel - e eu tenho um aplicativo para Android, tenho um aplicativo para iPhone - que queria refazer esse visual criando, por exemplo, com o Angular, com uma SPA (Single Page Application).
+
+[00:48] Então eu terei vários aplicativos diferentes que terão todas as mesmas regras. Imagine se no meu aplicativo para Android, para iPhone, nessa minha SPA, se eu precisasse me conectar diretamente com o banco de dados e fazer todas as manipulações, toda aquela regra de criar as temporadas e o número de episódios por temporadas, enviar e-mail para notificar o usuário e etc.
+
+[01:10] Então imagine se tiver que repetir todo esse processo para cada cliente que for criar. Para evitarmos esse tipo de situação, nós vamos criar um intermediário entre os nossos dados, e nossas regras de negócio, e o nosso cliente, ou seja, a visualização do sistema. O que teremos no final é basicamente um desenho assim.
+
+[01:31] Hoje o que nós temos é somente essa aplicação aqui, vamos dizer assim, uma aplicação web completa. Agora, a partir de hoje, teremos uma API. Com isso, você pode criar uma aplicação em Angular, em React, você pode criar uma aplicação no desktop para o seu sistema operacional, você pode criar um aplicativo para celular, isso tudo separado no código.
+
+[01:52] Então não importa qual tecnologia você vai utilizar para consumir a API. Mas, neste treinamento, vamos criar a API utilizando o Laravel. Esse curso é uma continuação de todos os treinamentos de Laravel, todos os conhecimentos que nós já vimos nos treinamentos anteriores serão necessários para criarmos essa API, até porque eu vou deixar alguns desafios no meio do caminho para você implementar coisas parecidas com o que já fizemos antes.
+
+[02:19] Enfim, basicamente a ideia é centralizar todo o acesso aos nossos dados e a nossa regra de negócios em um local só, para que os clientes diferentes consigam acessar em um ponto centralizado, para que, de novo, eu não precise, em vários aplicativos diferentes, me conectar diretamente ao banco de dados, fazer o envio de e-mails de forma separada, montar aquele e-mail de forma padronizada em códigos diferentes.
+
+[02:45] Então isso tudo estará na API. Agora que já entendemos o que é uma API e entendemos porque vamos precisar de uma API, vamos finalmente ver como criar uma API com Laravel.

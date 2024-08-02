@@ -1,0 +1,31 @@
+[00:00] Bem-vindos de volta. Como eu comentei na última aula, vamos utilizar uma ferramenta externa por alguns motivos. Primeiro para visualizar de forma mais agradável e, segundo, porque com o navegador não conseguiríamos, de forma simples, enviar informações para uma API, mas vamos ver isso mais frente.
+
+[00:20] Só que antes de conhecermos essa ferramenta, vou te mostrar a solução para o desafio. Eu criei o controller dentro da pasta "API", que é chamado de SeriesController, ele está dentro do namespace /Api. Eu só criei o método index. Nas minhas rotas da API, ao invés de utilizar aquela função anônima, eu utilizo esse controller, mandando para a rota do método index.
+
+[00:41] Eu não nomeei essa rota porque provavelmente não vamos precisar, já que não existem links aqui, mas se no futuro precisarmos, por algum motivo, nós revisitaremos este assunto. Agora vamos lá, finalmente conhecer essa tal ferramenta. Existem várias ferramentas para trabalharmos com APIs, fazer testes de APIs, e uma das mais famosas é o Postman.
+
+[01:02] Eu vou abrir em uma aba anônima, a tela do principal do Postman , que é em "postman.com". Se caso você não tiver uma conta ainda, você vai criar uma conta, é gratuito. Você pode, por exemplo, criar uma conta utilizando o próprio Google.
+
+[01:17] Com a conta criada, deixa eu abrir na minha conta que já está logada, você vai visualizar uma tela parecida com essa. O Postman trabalha com um conceito chamado *workspaces *, que são áreas de trabalho, vamos dizer assim.
+
+[01:30] Então, por padrão, você tem um workspace e é nele que vamos trabalhar, que é o my workspace, eu também só tenho um. O que vamos fazer? Caso você crie a sua conta agora, esse menu todo à direita estará vazio, porque isso são coleções de requests, coleções de requisições.
+
+[01:46] Nós podemos criar uma coleção para o nosso treinamento para ter todas as requisições dentro dessa coleção. Vou clicar no símbolo de mais ("+") no canto superior esquerdo das coleções e vou chamar de "API Laravel". Então criei uma coleção nova, vou nesses três pontos após o "New Collection" e clicar em e em "Rename". Eu vou chamar de "API Laravel".
+
+[02:02] Coleção criada, posso abrir selecionando a seta do lado esquerdo do nome e clicar em "Add Request", adicionar uma requisição. Nós vamos criar a requisição. Posso copiar a URL e colar no "GET" do Postman, é a URL para o sistema. Antes de enviar essa requisição, embaixo você deve ter notado que tem o botão "Auto-select Agent". Se você clicar nele, existem alguns agentes que o Postman pode utilizar.
+
+[02:26] Ele pode utilizar o próprio navegador para fazer uma requisição, um sistema de cloud que o próprio Postman tem ou um agente desktop - você baixa um serviço que ele fornece, esse serviço fica rodando, o Postman se conecta a esse serviço para poder fazer algumas coisas a mais, porque o agente do navegador tem algumas limitações.
+
+[02:46] Se eu tentar fazer a requisição dessa forma eu vou ter um erro, porque ele diz que não consegue fazer através do cloud agent requisições para local host. O que faz sentido, porque o cloud do Postman não tem acesso à minha máquina, então ele não consegue fazer isso. A sugestão é utilizarmos o agente desktop. Mas, via de regra, isso não é necessário. O que você vai fazer é desativar esse "Auto-select" e selecionar o "Browser Agent".
+
+[03:12] E você não precisa instalar nada. Quando você fizer a requisição clicando no botão "Send" do lado direito da tela, a resposta já vem pronta. Então repare que ela já vem bem mais amigável.
+
+[03:20] Esse JSON já vem formatado porque o Postman identificou, naquele cabeçalho da resposta, que isso é um JSON, ele já marcou e veio formatado. Ou seja, ele veio separado o array do objeto, veio com highlight para visualizarmos as separações do que é uma chave e o que é um valor.
+
+[03:38] Então, dessa forma, nesta ferramenta vamos começar a trabalhar. Tem bastante coisa que podemos fazer com o Postman, eu não vou entrar em muitos detalhes, mas existem alguns vídeos na Alura+, falando sobre o Postman. Você pode dar uma olhada lá se quiser conhecer funcionalidades a mais.
+
+[03:57] Mas, para o que vamos utilizar nesse treinamento, não é necessário nenhum conhecimento de Postman, vamos fazendo aos poucos, conforme for necessário. Então nós criamos essa requisição, vamos só salvá-la, clicando no botão "Save" do canto superior direito.
+
+[04:10] Eu vou chamar essa requisição, e posso dar um nome para ela clicando no ícone de lápis ao lado de "New Request" na parte superior central da tela, vou chamar de "Buscar Séries" ou todas as séries. Nossa requisição está salva, ela está dentro da coleção "API Laravel".
+
+[04:23] Agora que já temos o início de uma API e já sabemos como consumir essa API, vamos conversar sobre como podemos representar todo o sistema sem ter, por exemplo, formulários, links onde eu posso clicar e ir para outra tela, como eu poderia, por exemplo, enviar um dado, enviar uma série para cadastrar no meu banco. Nós vamos falar sobre tudo isso no próximo capítulo.

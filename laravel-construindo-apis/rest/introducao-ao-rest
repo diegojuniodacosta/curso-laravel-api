@@ -1,0 +1,80 @@
+[00:00] Bem-vindos de volta a mais um capítulo deste treinamento onde vamos aprender a criar APIS utilizando o Laravel. Nós já falamos um pouco sobre o motivo de se utilizar uma API, já vimos como criar um endpoint de uma API utilizando o Laravel, e com todos os conhecimentos de Laravel que já temos, já conseguimos fazer muita coisa dentro de uma API.
+
+[00:20] Só que precisamos entender alguns conceitos antes. Por exemplo, em uma aplicação normal, uma aplicação full stack, se quero inserir um dado, eu crio um formulário, o usuário vai preencher os dados nesse formulário e esses dados vão chegar em uma outra requisição, nessa requisição eu armazeno os dados e faço tudo o que tenho que fazer.
+
+[00:39] Como isso é feito em uma API? A nossa API precisa receber esses dados. Só que a nossa API não vai criar esse formulário, talvez esse formulário nem exista. Eu posso ter uma aplicação móvel que tenha um botão que já cria uma série automaticamente, por exemplo, sem o usuário preencher nada.
+
+[00:54] Então não vamos nos preocupar com como esses dados serão preenchidos, mas precisamos nos preocupar em como eles vão chegar. Existem diversas coisas que podemos começar a nos preocupar para fazer esse tipo de coisa, para planejar essa criação de API. A primeira coisa que precisamos pensar é em recursos. O que isso quer dizer?
+
+[01:15] Quando alguém for inserir uma série em um banco de dados, por exemplo, utilizando a nossa API, essa pessoa vai trabalhar com um recurso chamado "Série". Então nós precisamos separar, na aplicação, alguns recursos. No caso, nós temos, por exemplo, "Séries" e, se eu quiser acessar uma série em específico, podemos acessar essa série informando o id dela.
+
+[01:37] A mesma coisa o recurso de episódios. Caso precise de um episódio para, por exemplo, marcá-lo como assistido ou não, eu acesso informando o id na rota. Então quando falamos de uma API, principalmente utilizando algum padrão interessante, falamos bastante sobre recursos. Nossa série é um recurso, episódio é outro recurso, temporada pode ser um recurso e assim em diante.
+
+[02:01] Pensando no caso da Alura, por exemplo, tenho vários cursos, esses cursos são feitos por alunos, alunos fazem vários cursos. Então eu posso ter um recurso para cursos, um recurso para alunos e assim em diante. Como eu posso manipular esses recursos? O que eu consigo fazer? Por exemplo, eu tenho uma rota, uma URL, um endpoint, para "/series".
+
+[02:23] Mas como sei se eu quero buscar todas as séries ou inserir uma nova série, ou alguma coisa do tipo? Para isso podemos utilizar os verbos HTTP. O HTTP fornece tudo o que é necessário para conseguirmos demonstrar a nossa intenção ao manipular um recurso. Por exemplo, utilizando os verbos HTTP, se faço uma requisição para "/series" utilizando o verbo get, que é o que fizemos até agora, a intenção é buscar séries.
+
+[02:56] Se eu faço com verbo get, que tem a intenção de trazer dados, de buscar dados, uma requisição para "/series/id", quero trazer as informações de uma série específica.
+
+[03:07] Agora, para enviar dados, utilizo o verbo post. Esses verbos nós já conhecemos, utilizamos até no HTML. Então se faço um post para "/series", eu envio, no corpo desta requisição, as informações necessárias para inserir uma série nova.
+
+[03:23] De novo, essas informações podem estar em vários formatos, vamos falar sobre isso mais para frente. Se eu precisar atualizar uma série, entramos em métodos que não utilizamos ainda, por exemplo, o put ou o patch, vamos falar mais sobre a diferença entre esses dois, mas basicamente, com o put atualizo uma série por completo, ou seja, envio todos os dados de uma série.
+
+[03:48] Eu mando - no nosso caso, só temos o nome, mas pense ao atualizar um episódio, por exemplo, eu posso atualizar o número desse episódio ou se ele está assistindo ou não. Então quando eu utilizo o verbo put, preciso enviar todas essas informações, porque eu estou atualizando o episódio como um todo, esse recurso como um todo.
+
+[04:07] Agora, se eu quiser, por exemplo, somente marcar o episódio como assistido, é mais comum utilizarmos o verbo patch, porque o patch significa que estou atualizando parte de um recurso.
+
+[04:19] Existe essa sutil diferença entre put e patch e, na maioria das vezes, você vai ver a implementação somente do método put. Você envia todas as informações, o sistema só atualiza tudo porque é mais simples.
+
+[04:31] Por último, mas não menos importante, o delete, que serve, como você deve imaginar, para remover um recurso. No caso, remover a série com o id informado. Então repare que somente utilizando os verbos HTTP nós já conseguimos demonstrar a nossa intenção, o que queremos fazer com aquele recurso.
+
+[04:51] Só que, além disso, precisamos informar qual formato, por exemplo, vamos utilizar para enviar um dado, para receber um dado. Para isso utilizamos os cabeçalhos. Eu já mostrei para vocês que a resposta que o Laravel nos traz já possui um cabeçalho de "Content-Type: application/json".
+
+[05:09] Obviamente o Laravel não inventou esse nome "application/json". Isso é o mime type, é o tipo de dados quando trabalhamos em JSON. Se você quiser saber o tipo de dados, por exemplo de XML, você pode pesquisar mime type XML ou content type XML, você terá o resultado. Com o HTML, por exemplo, é "txt/html".
+
+[05:32] Então se eu vou informar para o meu cliente que a minha resposta está no formato JSON, eu preciso adicionar esse cabeçalho. Já se na minha requisição preciso informar para a API que eu só aceito a resposta em JSON, ou só em XML, ou só em HTML, eu mando esse accept.
+
+[05:50] Por padrão, o navegador, quando faz uma requisição, ele já manda esse accept com "txt/html". Para que os servidores saibam que é um navegador que está acessando, que ele espera receber um HTML. No caso, não vamos trabalhar com nenhum cliente, só vamos criar a API, mas é interessante saber que tanto a resposta quanto a requisição podem enviar informações através do cabeçalho.
+
+[06:15] Já falamos como demonstramos a intenção, como especificamos o formato. Como eu respondo se deu tudo certo, se teve algum erro? Para isso nós temos os códigos HTTP. Muito provavelmente você já recebeu um erro 404. Inclusive deixa eu acessar o próprio site da Alura, se eu acessar aqui alguma coisa que não existe, temos um erro 404, esse é o famoso erro 404.
+
+[06:42] Seu acesso Cursos Alura, ele inclusive nos mostra esse código. Esse número 404, é um código de status HTTP. Voltando para a apresentação, o HTTP fornece diversos status, códigos de resposta. Por exemplo, todos os códigos, todos os status que estejam na faixa de 200, ou seja, 200, 201, 204 e infinito, isso quer dizer que essa requisição foi processada com sucesso.
+
+[07:12] Nós temos uma lista de significados: o 200 é "ok", o 201 é criado, o 204 é sem conteúdo. Ou seja, em todos esses casos, temos sucesso, mas temos significados diferentes. Quando eu devolvo todas as séries na minha API - eu posso mandar um 200, ok. Quando eu recebo uma requisição e crio uma API nova, posso responder um 201, criado, quer dizer que eu criei um novo recurso.
+
+[07:39] Então podemos trabalhar com esses códigos. Os códigos na classe 300 indicam que o cliente precisa tomar alguma ação. Por exemplo, um código de redirecionamento: quando você acessa uma URL "google.com" e é redirecionado para HTTPS, que é o com segurança "google.com", isso quer dizer que o servidor HTTP que está servindo sem ser HTTPS, devolveu para o seu navegador um código, provavelmente 301, de redirecionamento.
+
+[08:13] No cabeçalho, um cabeçalho chamado location, ele envia para qual URL o navegador deve redirecionar o usuário. Então os códigos na faixa 300 informam que o cliente precisa tomar alguma outra ação.
+
+[08:27] Criando APIs, é muito incomum você ter uma resposta com um código 300. Mas existem casos bem incomuns onde você pode utilizá-los, então vou deixar um Para Saber Mais com a lista de códigos HTTP, inclusive em um formato bem interessante, bem engraçado.
+
+[08:43] Continuado, todos os códigos na faixa 400 como, por exemplo, o 404, indicam que houve um erro na requisição, ou seja, um erro causado pelo cliente. Eu fui lá e digitei uma URL que não existe, isso gera um erro na faixa 400. Se eu enviar, por exemplo, uma série sem o nome, eu tenho um código que diz que não consigo processar isso que você enviou.
+
+[09:06] Já os erros na faixa 500 são um problema do lado do servidor, ou seja, tem um problema no código, o meu servidor de banco de dados está fora, o próprio servidor web está indisponível.
+
+[09:17] Isso tudo são códigos que vamos retornar quando acontecer um problema no servidor. Se tudo der certo, não precisaremos retornar nenhum desses status, mas é importante conhecer também.
+
+[09:28] Então, por padrão, de forma voluntária, vamos devolver o status na faixa 200 e 400 nesse treinamento. Por exemplo o 201 quando eu criar alguma coisa, o 404 quando alguém tentar acessar um recurso não existe e assim em diante.
+
+[09:44] Além disso tudo, isso é praticamente todo o básico que precisamos conhecer para criar uma API, podemos ter conceitos mais avançados.
+
+[09:54] A sigla HATEOAS, que é até difícil falar, significa hypermedia as the engine of application state, que é um nome super grande e complexo, mas que é basicamente informar que temos hypermedia como motor da aplicação, de estado da aplicação. Posso enviar coisas além de texto, por exemplo um link, uma URL para a pessoa fazer uma outra requisição e assim em diante.
+
+[10:17] Quando estou trabalhando com uma API, eu preciso me preocupar com algumas coisas a mais. Por quê? Se eu estou trabalhando com uma API, se estou separando o servidor do cliente, quer dizer que provavelmente terei vários clientes acessando essa mesma API.
+
+[10:32] Então precisamos garantir que isso seja feito sem estado no lado da API e que o cliente consiga armazenar, de alguma forma, as suas credenciais, por exemplo. Nós vamos falar um pouco sobre isso.
+
+[10:43] Justamente essa parte de trabalhar sem estado, stateless, entra em um ponto de escalabilidade. Se você quiser replicar sua API em vários servidores, por exemplo, isso é uma preocupação muito comum.
+
+[10:54] Como faremos para não armazenar sessões, por exemplo, em um servidor? De novo entramos nesse ponto de stateless. Enfim, existem infinitos conceitos bem mais avançados quando falamos de API. Repare que citei padrões bem específicos, tem um nome muito específico - será que eu inventei isso tudo, eu ditei esses padrões?
+
+[11:14] Óbvio que não, isso tudo é chamado de Rest, ou representational state transfer, transferência de estado representacional. Esse nome complexo basicamente quer que quando criamos uma API utilizando o padrão Rest, significa que nós estamos transferindo estado de recurso, é isso.
+
+[11:37] Nós temos uma série, que é um recurso na nossa aplicação, vamos transferir do cliente para o servidor um estado dela, que é o seu nome e o servidor vai armazenar esse estado no banco de dados. Quando tento buscar todas as séries, o servidor pega o estado daquela série e devolve para mim, ele transfere utilizando um formato especificado, com os códigos HTTP e etc.
+
+[11:59] Tudo isso que falei faz parte do padrão Rest. Existem outros padrões quando trabalhamos com APIs, padrões legados como o soap, por exemplo, e padrões até mais recentes, como o GRPC, mas o Rest ainda é o mais comum, o mais difundido.
+
+[12:16] É isso o que vamos trabalhar nesse treinamento, vamos criar uma API restful, ou seja, uma API que utiliza o padrão Rest, utilizando o Laravel.
+
+[12:23] Eu já falei bastante, citei vários padrões e várias coisas, então vamos finalmente colocar isso tudo em prática e criar, por exemplo, uma requisição que recebe uma série para criar uma rota que recebe uma série para armazenar ela no banco de dados. Vamos ver como podemos criar um post de série no próximo vídeo.
+

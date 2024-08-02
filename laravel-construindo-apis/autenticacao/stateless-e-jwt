@@ -1,0 +1,42 @@
+[00:00] Bem-vindos de volta a mais um capítulo deste treinamento, onde estamos criando a nossa API com o Laravel. Na verdade, nós já criamos a API, ela já está funcional. Eu já implementei tudo o que precisava nela, só que está faltando eu autenticar o usuário. Eu preciso conhecer quem é o usuário que está acessando a minha aplicação.
+
+[00:17] Se você se lembrar bem, na nossa aplicação full stack, nós fizemos isso utilizando sessões, o próprio Laravel já nos entrega isso implementado. O que acontece? Quando eu mando um formulário de login para o Laravel, o Laravel faz aquele auth::attempt, caso a credencial esteja correta, se o usuário e senha estiverem corretos, o Laravel salva uma informação em sessão.
+
+[00:44] Ou seja, no servidor que está rodando PHP, um arquivo será armazenado, um arquivo será salvo, e esse arquivo identifica aquele usuário. Para o usuário saber qual a identificação dele também, o PHP envia um cookie para ele. Por isso o usuário em si, a pessoa que está utilizando o sistema, não precisa saber disso tudo.
+
+[01:06] Porque o navegador já sabe gerenciar cookies e o servidor sabe gerenciar as sessões. Só que essa abordagem tem alguns problemas, vamos falar de alguns deles. Primeiro: imagine que a nossa aplicação cresceu. Então ela está recebendo muitos acessos, muitas requisições, eu preciso colocar ela em mais de um servidor.
+
+[01:27] Para isso utilizo um load balancer, um balanceador de carga, então eu teria esse desenho como na imagem: Um círculo que representa o "Users" apontando para outro círculo representando o "Load Balance" e este com duas setas, cada uma apontando para um servidor.
+
+[01:35] Os usuários vão acessar o meu balanceador de carga, que vai mandando cada usuário para um servidor desses, por exemplo. Então, ora o usuário cai nesse primeiro servidor, ora o usuário cai neste outro servidor.
+
+[01:46] Agora imagine que tenho alguma regra que esteja implementada para que o usuário sempre caia no mesmo servidor e esse usuário está sempre caindo neste servidor, e este servidor saia do ar. Então, embora tivéssemos resolvido o problema inicial, o problema volta a acontecer, porque como esse servidor saiu do ar, o usuário vai agora cair em outro servidor.
+
+[02:05] Nesse esquema de sessões, o usuário seria deslogado, então essa não é uma abordagem tão interessante. Esse é um problema, no cenário da minha aplicação crescer e eu precisar de load balancer, utilizar sessões não é uma boa.
+
+[02:19] Um outro ponto é a gestão de cookies, nós estamos lidando, quando temos uma aplicação full stack, nós sabemos que ele será utilizado dentro de um navegador.
+
+[02:28] Não tem problema nenhum, o navegador sabe lidar com cookies. Agora, quando fazemos uma API, quem pode estar consumindo ela pode ser um terminal da linha de comando, pode ser um aplicativo web, pode ser alguma coisa que não gerencia cookies muito bem.
+
+[02:42] Por exemplo, se nós, a partir de um código back-end, formos enviar requisições para outro código back-end e esse código nos retorna cookies, nós precisamos gerenciar esses cookies manualmente. O navegador não vai nos ajudar nesse ponto, e cookies são difíceis de gerenciar, de manter.
+
+[03:00] Um outro ponto, mesmo que você utilize o navegador, se o navegador, se o seu cliente está em um domínio, a sua API está em outro domínio, e você precisa dessa sessão para um outro domínio ainda, você acaba tendo vários problemas, porque cookies não funcionam bem em domínios diferentes. Na verdade, eles não funcionam, os cookies são atrelados ao domínio.
+
+[03:23] Então repare que temos vários problemas. Quando trabalhamos com APIs nós precisamos nos preocupar muito mais com isso porque, de novo, nós não sabemos quem vai consumir nossos dados, pode ser alguém digitando comandos na linha do terminal ou pode ser alguém somente criando uma aplicação web, que é o mais comum.
+
+[03:40] Por isso a abordagem que costumamos utilizar em aplicações web é a autenticação por token. Inclusive tem um vídeo no meu canal, você pode pesquisar por "Dias de Dev token" no youtube, onde eu falo um pouco exatamente sobre a autenticação por token, que é qual o fluxo que vamos utilizar para um token ser válido. O que acontece?
+
+[04:01] Um usuário vai mandar, para alguma rota da nossa API, o usuário e senha, nós vamos validar, caso esse usuário exista e esteja tudo certo, eu crio, a partir desse usuário, um token, um RG, um CPF para esse usuário, e devolvo para o usuário. O usuário vai armazenar esse token em qualquer lugar, não é tão complexo quanto o cookie.
+
+[04:22] Então, por exemplo, se estamos em um navegador web, ele pode armazenar em um cookie. Se ele está em um aplicativo, ele pode guardar no SQLite do aplicativo. Se ele está no terminal, ele pode salvar em um arquivo. Existe essa liberdade maior. Em todas as requisições que o usuário for fazer para as outras URLs, que não seja essa de login, ele manda esse token.
+
+[04:42] Esse token, ele consegue ser decodificado para eu descobrir qual é o usuário. A partir disso conseguimos ter todo aquele processo de autenticação que já conhecemos.
+
+[04:54] Essa é a ideia por trás de ter uma forma de login stateless, ou seja, sem estado, sem armazenar sessão, e com isso conseguiremos implementar a autenticação em uma API sem ter todas as desvantagens. Além desse vídeo de autenticação por token, tenho um outro vídeo específico sobre um tipo de token, que é o JWT.
+
+[05:15] Então antes de você continuar esse vídeo, vou deixar um desafio para você: assista esses dois vídeos que vou deixar no Para Saber Mais, e tente implementar somente com middlewares, que já aprendemos no curso anterior, tente aplicar somente com middlewares uma autenticação utilizando o JWT.
+
+[05:33] Sem muitos pacotes externos, use somente um pacote para cuidar do JWT. Fora isso, eu quero que você implemente a autenticação.
+
+[05:42] Eu não vou fazer isso aqui porque no próximo vídeo já volto para mostrar como podemos fazer de forma muito simplificada, utilizando uma biblioteca que o Laravel já nos fornece.
+

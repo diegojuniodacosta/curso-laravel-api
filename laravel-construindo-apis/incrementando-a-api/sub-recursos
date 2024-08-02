@@ -1,0 +1,46 @@
+[00:00] Bem-vindos de volta. Vamos implementar a busca de todas as temporadas de determinada série. Como temos aqui o relacionamento de séries com seasons, com temporadas, essa implementação fica simples. Vamos, por exemplo - deixa eu abrir na nossa rota de APIs em "routes > api", e vamos criar só uma rota mesmo, específica.
+
+[00:23] Então será utilizando o verbo get, Route::get(url: '/series/, alguma série que vou informar, {series}/seasons'. Ou seja, baseado na série eu estou buscando todas as temporadas.
+
+[00:36] O ideal seria criar um controller de temporadas, como fizemos na aplicação full stack, mas eu vou adicionar direto uma função aqui, porque esse código vai ficar pequeno.
+
+Route::get(url: '/series/{series}/seasons', function () {});Copiar código
+[00:45] Mas, de novo, fica o desafio para você extrair isso para um controller, que, hoje em dia, acredito que já nem seja tanto um desafio mais, porque isso já está bem tranquilo de fazer. Então vamos receber esse parâmetro (\App\Models\Series $series), nós temos a series, e podemos retornar, de series, suas seasons, return $series->seasons;.
+
+[01:05] Simples assim, teoricamente é bastante de boa. Vamos no Postman, na aba "Buscar Séries", esse código não vai mudar nada. Só que, baseado em uma série, eu quero pegar uma série específica, ou seja, "/2/seasons". Com isso eu espero ver todas as temporadas de Grey's Anatomy.
+
+[01:27] Quando eu acessar selecionando o botão "Send" no canto superior direito do Potman, perfeito, temos no resultado todas as temporadas de Grey's Anatomy. No caso, nós temos 18 temporadas cadastradas. Com isso, conseguimos acessar um recurso baseado em outro recurso.
+
+[01:43] Então vamos parar um pouco para pensar nisso: o que nós estamos fazendo, na prática, é bastante simples, estamos pegando um relacionamento - um relacionamento que é até simples de implementar.
+
+[01:53] Só que a parte teórica tem alguma coisa envolvida. O que acontece é: nós estamos buscando um recurso que possui relacionamento com outro recurso específico. Então estamos buscando uma coleção de temporadas que são relacionadas com uma série específica. Esse é o conceito de sub-recursos.
+
+[02:13] Quando trabalhamos com restful APIs, ou com APIs que são restful, que implementam o padrão Rest, nós podemos - e muitas vezes têm - sub-recursos. Esse é um caso bastante simples de como podemos utilizar sub-recursos. Esse padrão na URL, nós poderíamos muito bem colocar algo como season 2 da série 2.
+
+[02:35] Só que isso nós não olhamos e entendemos que estamos buscando as temporadas da série 2, parece que estou buscando a segunda temporada de alguma coisa. Por isso nós seguimos esse padrão, o recurso pai, "series", com a sua identificação, "/2", e depois o sub-recurso, "/seasons". Essa é a ideia de se utilizar sub-recursos.
+
+[02:53] Como sub-recursos é um conceito que nós já implementamos, nós já utilizamos inclusive na aplicação full stack, para esse vídeo não ser somente sobre sub-recursos, vamos pensar em um outro cenário, que é implementar a busca de todos os episódios de uma série. Imagine que eu quero buscar todos os episódios de uma série, independente de qual temporada for.
+
+[03:19] Então quando busco "api/series/2/episodes", obviamente não temos nenhuma resposta, temos um 404. O que podemos fazer para trazer todos os episódios de uma temporada? Vamos criar essa nova rota, então uma rota que vou buscar Route::get(url: 'series/, baseado em alguma série, /{series}/episodes'. Isso, de novo, eu poderia ter um controller de episódios, mas vou implementar direto.
+
+Route::get(url: 'series/{series}/episodes', function (\App\Models\Series $series)Copiar código
+[03:48] O que eu terei? Eu quero retornar, de alguma forma - eu poderia fazer, vamos tentar implementar uma "gambiarra" que é: a partir de cada temporada, ou seja, cada uma dessas temporadas, poderia percorrer, ou até fazer um map disso, mapear de temporadas para episódios. Depois fazer um flat, alguma coisa do tipo, return $series->seasons->map()->flat;.
+
+[04:12] Mas existe uma forma mais simples. Eu quero acessar direto os episódios de uma série, como posso fazer isso? Como posso implementar esse relacionamento? Como conversamos no treinamento onde falamos sobre relacionamentos, existe um tipo de relacionamento chamado through, através, que é exatamente o que podemos implementar.
+
+[04:35] Eu posso ter, por exemplo, um relacionamento com episodes, public function episodes(), e eu posso informar que essa série tem muitos episódios através de temporadas, return $this->hasManyThrough(). Ou seja, eu tenho muitos episódios baseado no seasons, nas temporadas, (related: Episodes::class, through :Seasons::class).
+
+[04:53] Com esse hasManyThrough, o que o Eloquent vai fazer é: quando eu tentar acessar os episódios de uma série, ele vai ver todas as temporadas dessa série e, para cada temporada, todos os episódios dessa série, e retornar como uma coleção.
+
+[05:09] Dessa forma, se eu buscar todos os episódios dessa série no Postman selecionando o botão "Send" no canto superior direito, eu tenho todos os episódios dessa série no corpo, independente da temporada.
+
+[05:17] Repare que estou avançando, agora já estou na temporada 3, temporada 4 e assim em diante. Repare que com isso nós conseguimos ter um relacionamento um pouco mais complexo e continuamos utilizando os sub-recursos. Um detalhe interessante é esse "laravel_through_key".
+
+[05:35] Ele já adiciona, em cada item dessa coleção, essa chave, para caso precisarmos identificar que é um relacionamento do tipo through, e caso queiramos encontrar a entidade pai, vamos dizer assim.
+
+[05:48] Dessa forma conseguimos ter um relacionamento mais complexo. Então já conhecemos sub-recursos, inclusive deixa eu salvar isso como uma outra rota, para termos armazenado, "Episódios da Série".
+
+[06:03] Pronto, temos uma outra rota salva. Com isso, já temos, além do CRUD, nós temos sub-recursos, já conhecemos mais sobre o Eloquent. Agora vamos implementar, finalmente, a possibilidade e a funcionalidade de marcar um episódio como assistido, porque, repare, todos esses episódios, eles foram inseridos sem estarem assistidos, que é o nosso padrão.
+
+[06:24] Então eu quero marcar um episódio como assistido a partir da nossa API. No próximo vídeo vamos conversar sobre como podemos modelar para implementar isso.
+

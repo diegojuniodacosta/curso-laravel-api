@@ -1,0 +1,40 @@
+[00:00] Bem-vindos de volta. Eu achei o detalhe que estava fazendo errado no cabeçalho, eu estava colocando um dois pontos por algum motivo onde colei o token após o "Bearer". Então se eu coloco esses dois pontos, ele não vai identificar, é só remover, agora sim a autorização é enviada da maneira correta.
+
+[00:14] Então, existem dois conceitos de segurança muito importante quando falamos de login: autenticação e autorização. A autenticação é para identificar um usuário, autorização é para permitir que usuário, conhecido ou não, faça alguma tarefa. Por exemplo, eu só quero permitir que removam séries usuários administradores ou algo assim.
+
+[00:36] Como poderíamos fazer isso com o Sanctum? Vamos abrir o nosso código em "routes > api.php". Nós não teremos isso, não teremos autorização na nossa API, mas quero te mostrar como ela seria feita. Eu tenho aqui o acesso ao usuário, a partir desse usuário, eu poderia ter um tipo, por exemplo, esse usuário é admin, $user->admin, então eu vejo se esse usuário for administrador.
+
+[00:58] Se ele for administrador, eu posso adicionar uma habilidade a mais nesse token, nós temos um array de abilities. Eu posso informar, por exemplo, que esse usuário, ele pode $token = $user->createToken(name: 'token', ['series:delete']). Eu posso dar qualquer nome aqui, pode ser ['pode_remover_series'], mas é um bom padrão termos um recurso que será manipulado, dois pontos e a operação.
+
+[01:23] Basicamente estou criando esse token com essa habilidade, com a habilidade de remover uma série, por exemplo. Quando eu for fazer a remoção da série - vamos no meu series controller, public function destroy(int $series, Request $request). Eu consigo pegar o usuário a partir do request, que inclusive vamos testar, ver se realmente conseguimos pegar o usuário, dd($request->user());.
+
+[01:49] Vamos no Postman, fazer o "DELETE" de qualquer coisa, de qualquer série. Ele está recebendo só o id, então não fará nenhuma validação. Não passamos o cabeçalho, não passamos a autorização. Vamos copiar esse token em "Preview" e passar a autorização. Inclusive eu consigo configurar no Postman, "Collections > Api Laravel > Bearer Token", a autenticação que vou utilizar em qualquer requisição dentro dessa coleção, será com esse token.
+
+[02:17] Então já não precisamos adicionar um por um. Quando eu envio o "DELETE" clicando no botão "Send" na aba "Remover séries", ele está fazendo o DD do nosso user, ou seja, consegui pegar o usuário sem problemas, perfeito.
+
+[02:36] Existem outras formas de eu pegar. Se eu não precisar do request, por exemplo, posso direto pegar o public function destroy(int $series, User $user). O Laravel já sabe - deixa eu fazer o DD no código do projeto, dd($user). O Laravel já sabe que ele precisa me entregar o usuário que está logado, está lá.
+
+[02:51] Uma outra forma - deixa eu ver se os atributos estão certos, cadê os nossos atributos? Aqui, repare que parece que ele não pegou o usuário correto. Eu ia te mostrar exatamente a próxima opção, porque ao invés de utilizar o User, utilizar authenticable, (int $series, Authenticable $user) - eu não sei exatamente como falar essa palavra - mas alguém que seja autenticável. Agora sim ele irá trazer o nosso usuário preenchido.
+
+[03:18] Então um detalhe: user, ele vai tentar buscar um usuário, mas não vai encontrar, porque não passamos pela URL. Agora, se ele encontrar alguém que seja autenticável, ele consegue criar o nosso usuário. Mas já falei bastante sobre usuários, o que acontece? Com o usuário em mãos, eu tenho também os detalhes do token.
+
+[03:37] Então eu posso verificar se o token desse usuário pode fazer algo, dd($user->tokenCan()). Por exemplo, (ability: 'series:delete'). Esse não vai ter, esse será falso, teremos um resultado falso, porque nós utilizamos - eu já utilizei o esse token aqui. Vamos lá, vamos fazer login de novo. O que acontece?
+
+[03:59] Se eu perguntar se esse usuário pode fazer qualquer coisa, ele vai poder, isso tudo será verdadeiro, porque quando geramos o token inicial, nós não passamos abilities, então ele pode fazer qualquer coisa. Aí é que está, nós, por padrão, temos essa hability, ['*'], essa habilidade, essa permissão, que é fazer tudo.
+
+[04:20] Então se eu quiser limitar, eu posso fazer isso, $token = $user->createToken(name: 'token', ['series:delete']);, agora sim teremos o resultado esperado. Por padrão o usuário pode fazer tudo, caso eu queria limitar eu passo as abilities. Então eu posso ter, por exemplo, uma habilidade padrão, ter uma default, ['series:delete', 'default'], e em todos os lugares eu verifico só o default, ou nem verifico nada.
+
+[04:40] Agora essa habilidade series:delete, em específico, eu terei somente no usuário que for logado depois. Vamos lá, eu quero revogar esse token. Vamos para um outro ponto, em APIs normalmente não implementamos uma rota de logout. Não é tão comum, porque o token fica no nosso cliente, então se o cliente quiser fazer logout, ele simplesmente excluir aquele token.
+
+[05:03] Ele não precisa avisar a API que fez logout, porque não estamos armazenando sessão aqui. Mas, sempre que eu fizer um login, eu posso fazer logout desse mesmo usuário, ou seja, eu posso revogar qualquer outro token que ele tenha. Eu posso fazer aqui $user->tokens()->delete(). Ou seja, eu vou acabar removendo todos os tokens que esse usuário tenha.
+
+[05:25] Com isso eu vou revogar qualquer token anterior e criar um novo. Vamos fazer um login de novo, vamos lá, o meu login no Postman clicando no botão "Send" na aba de login. Repare que esse token anterior deixará de ser válido. Fiz o login, agora eu tenho esse outro token. Quando eu tentar remover a série e fazer essa verificação, verificar se o usuário pode fazer isso, eu vou ter um erro, de cara, de não autorizado - não autenticado, no caso, porque eu estou usando o token antigo.
+
+[05:52] Vamos utilizar o token novo. Este usuário não pode fazer qualquer coisa. Agora, se eu perguntar se ele pode fazer um 'series:delete', ele pode, ou seja, eu tenho permissão específicas. Então reparem que eu consigo adicionar habilidades, ou permissões específicas, para cada token. Isso eu posso fazer especificações baseadas, por exemplo, no tipo de usuário.
+
+[06:18] O usuário é administrador? Se for, ele pode fazer tudo, eu tenho a permissão de remover qualquer coisa. Então eu posso ter uma permissão, uma hability, por exemplo, de is_admin, e eu posso verificar se esse token pode ser administrador. É uma possibilidade. Então reparem que eu consigo fazer diversas coisas bem interessantes utilizando tokens com o Sanctum.
+
+[06:42] De novo, o Sanctum é uma biblioteca que já vem com o Laravel. Na documentação tem bastante coisa interessante. Esse middleware, o "auth:sanctum" já vem por padrão também nas nossas rotas. Ele já vem configurado, não precisamos fazer nada. Inclusive, nessa rota Route::middleware(middleware: 'auth:sanctum'), de exemplo, que tem no arquivo de API, ele já é utilizado.
+
+[07:07] Então repare que embora o login feito na nossa aplicação full stack foi bastante fácil com o Breeze, eu acho que aqui, na API, ele é ainda mais fácil, porque esses detalhes de autenticação são muito tranquilos de implementar também Por isso eu acho bastante interessante o Laravel Sanctum. Mas, enfim, já fizemos tudo que tínhamos que fazer na nossa API, o próximo vídeo então é aquela revisão do que vimos até aqui.
+

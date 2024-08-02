@@ -1,0 +1,10 @@
+Se você acompanha o mundo Laravel, provavelmente já ouviu falar sobre o Lumen. O Lumen era o microframework do Laravel, ou seja, era um framework mais leve e com menos componentes, ideal para criar APIs (já que o Blade, por exemplo, não vinha configurado).
+
+Com a evolução do PHP, cada vez mais essa abordagem deixou de ser necessária. Hoje em dia a versão "completa" do Laravel já fornece performance o suficiente então por isso o Lumen não é mais uma ferramenta recomendada pela equipe do Laravel.
+
+Mas há cenários onde nós precisamos de ainda mais performance criando aplicações Laravel (e não apenas APIs). Em cenários de volumes muito grandes de requisições, nós podemos tirar proveito do Swoole.
+
+O Laravel Octane é um componente do Laravel que permite executar sua aplicação usando um servidor Swoole (ou RoadRunner). Com isso você ganha MUITA performance, mas há algumas desvantagens. O código pode ter vazamentos de memórias e você precisa se preocupar com o estado armazenado da aplicação.
+
+Se quiser entender mais sobre Swoole antes de se aventurar com o Octane, você pode conferir o treinamento de Swoole aqui na Alura: https://cursos.alura.com.br/course/swoole-php-servidor-assincrono-corrotinas-php
+

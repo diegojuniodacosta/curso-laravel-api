@@ -1,0 +1,42 @@
+[00:00] Bem-vindos de volta. Vamos finalmente criar uma API utilizando o Laravel, vamos criar o primeiro endpoint. Simplificando, um endpoint, quando estamos falando de API, é basicamente uma URL, um ponto onde conseguimos acessar a API, só isso.
+
+[00:18] Vamos criar a primeira rota, o primeiro endpoint. Vou abrir o projeto, repare que ele já está rodando. Nesse projeto, nós temos definidas as rotas dentro de "routes > web.php". Vamos criar uma rota nova, um Route::get(). Ao invés de ser /series, vou chamar de (url:'3/api/series', ). Aqui, por enquanto, terei somente uma função mesmo, (url:'3/api/series', function () {});. O que essa função vai retornar?
+
+[00:45] Nós já vimos, anteriormente nos primeiros cursos de Laravel, que quando retorno alguma estrutura de dados ou alguma coisa que não seja uma view, por exemplo, que não seja uma string, o Laravel vai tentar converter isso da melhor forma e nos responder da melhor forma. Então, se eu tenho, por exemplo, o nome de uma série, return [ 'Grey´s Anatomy'];.
+
+[01:08] Se tenho somente o nome de uma série dentro de um array, por exemplo, quando eu acessar essa URL "http://localhost:8000/api/series", o que ele vai nos retornar é basicamente um JSON: ["Grey's Anatomy"].
+
+[01:18] Inclusive vou inspecionar clicando com o botão direito no mouse e escolhendo a opção "Inspecionar", e quando eu atualizar, em "series", quando vamos na aba "Cabeçalhos", em "Cabeçalhos de resposta", o "Content-type" é JSON.
+
+[01:34] Ou seja, ele está nos retornando em um formato conhecido como JSON. Quando falamos de API, esse é um formato muito comum e muito utilizado. No treinamento de MVC nós falamos um pouco sobre web service API no geral, comentamos sobre responder com XML, com JSON. Então neste treinamento vamos utilizar JSON como formato para transferência de dados da nossa API.
+
+[01:58] Porque se eu devolvo - imagine que eu estou criando um aplicativo, esse aplicativo acessa a minha API e devolvo para ele aquela página HTML. Esse aplicativo terá muito trabalho para ler esse HTML, fazer o parse, fazer a leitura, o processamento desse HTML, para pegar somente as informações necessárias.
+
+[02:18] Se eu devolvo em um formato como JSON, a facilidade é muito grande, é muito mais tranquilo para o cliente dessa API, parsear, fazer o processamento desses dados e tratá-los como eles preferirem. Continuando, também comentei que se eu retorno alguma model ou uma collection do Eloquent, o próprio Laravel já sabe como devolver isso também.
+
+[02:40] Então se eu quero buscar todas as séries, eu posso simplesmente devolver o resultado de return \App\Models\Series::all();. Com isso teremos um JSON já formatado com todas as informações de uma série.
+
+[02:54] Com a URL "http://localhost:8000/api/series" e atualizando na parte superior esquerda da tela, nós temos o id dessa série, o nome, quando ela foi criada, quando foi atualizada e a sua imagem de capa.
+
+[03:02] Então já temos tudo pronto para trabalhar com a API. Só que tem alguns detalhes ainda. Primeiro, não é comum termos em uma aplicação, em um mesmo sistema, um projeto como esse, que é o que chamamos de full stack, com a parte de visualização e também uma API.
+
+[03:23] Normalmente nós temos ou uma API ou uma aplicação full stack. Mas é perfeitamente normal ter os dois. Então neste projeto teremos os dois somente para já reutilizar algum código que fizemos e etc. Mas, via de regra, teremos isso separado. Outro detalhe é que eu tenho as definições da minha rota de API junto com as definições das minhas rotas do sistema full stack.
+
+[03:49] Isso não é tão interessante. Além disso, se acessarmos aquele "app > Http > Kernel.php", temos alguns middlewares que são adicionados, por padrão, em todas as rotas que temos daquele arquivo web.
+
+[04:04] Ttemos detalhes de cookies, de sessão e etc. Isso nós não utilizamos quando estamos falando de API, não é comum - não é que é impossível ou que não se utiliza, mas não é tão comum utilizarmos cookies quando estamos trabalhando com a API, não utilizamos sessões quando estamos trabalhando com a API, vamos falar bem mais sobre isso.
+
+[04:25] Então não é interessante deixarmos as rotas da API dentro daquele arquivo de web.php. Quando eu volto em "routes", eu tenho um arquivo específico para definir rotas de API, "routes > api.php". De novo, se eu volto no meu "Kernel.php", tenho middlewares específicos já configurados.
+
+[04:43] Mas, enfim, não precisaremos alterar isso, só vamos manter esses middlewares que o Laravel sugere, e agora vou trazer essa rota de web.php - vou recortar daqui - e vou colar no arquivo api.php. Só que o que acontece? Toda rota que for definida dentro desse arquivo api.php, ela já possui o prefixo /api. Então posso simplesmente remover o /api daqui.
+
+[05:06] Então eu estou definindo uma rota /series em api.php e outra rota /series em auth.php. Mas, na verdade, elas são rotas diferentes. Em auth.php é somente /series mesmo, em api.php, com eu estou no arquivo de API, será /api/series. Então essa função da linha 21 será executada. Quando eu atualizo na aplicação, tenho o mesmo resultado.
+
+[05:28] Em "/api/series" eu tenho o resultado dessa função da linha 21. Então, como desafio entre um vídeo e outro, que você crie um novo controller somente com essa função: function(){return\App\Models\Series:all();};. Esse controller vai ficar dentro de "Controllers", API e vai se chamar "series controller".
+
+[05:45] Então repare que é bastante simples esse desafio, você só terá um método com esse retorno, que já está implementado. Crie esse controller entre um vídeo e outro - só que o que está nos faltando para ter realmente o início de uma API de respeito? Uma visualização interessante também.
+
+[06:03] Porque repare que eu estou acessando pelo navegador essa API, então fica um pouco difícil visualizar esse JSON. Imagine que eu queira fazer uma requisição diferente, que não seja para buscar dados, que eu queira armazenar dados, por exemplo, criar uma nova série. Como eu faria, já que não tem formulário?
+
+[06:21] Esse tipo de coisa será muito facilitada quando utilizamos uma ferramenta específica para consumir APIS, principalmente para testar APIs. No próximo vídeo vamos conhecer uma ferramenta que podemos utilizar para fazer esses testes que estamos fazendo, para consumir APIs.
+

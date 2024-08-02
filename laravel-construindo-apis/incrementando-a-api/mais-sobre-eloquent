@@ -1,0 +1,44 @@
+[00:00] Bem-vindos de volta a mais um capítulo desse treinamento onde estamos criando uma API utilizando o Laravel. No último capítulo, no último vídeo, falamos um pouco sobre como utilizar o HTTP da forma correta, passando os cabeçalhos e etc. Então vamos falar também sobre na hora da resposta utilizarmos o HTTP da forma correta. Porque, o que acontece?
+
+[00:20] Se eu tentar - deixa eu fechar todas essas abas do Postman, inclusive, desfazer essa alteração que eu coloquei com erro. Agora se eu tentar buscar uma série que não existe, o que acontece? Estamos recebendo uma resposta em HTML, é um not found, é um 404, mas em HTML.
+
+[00:39] Eu não quero fazer isso. Por que isso acontece? Quando eu utilizo essa funcionalidade de receber a nossa model por parâmetro, show(Series $series), o que o Laravel faz é um Series::findOrFail(). Esse método findOrFail tenta buscar a série com o id, se não for encontrada, ele lança uma exceção.
+
+[01:05] Essa exceção é buscada, ela é capturada por algum exception handler, alguma coisa que lida com exceções. Então poderíamos dar uma olha, registrar um novo exception handler, dar uma investigada em todos os que o Laravel tem, por exemplo, dentro de Handler.php, e reescrever essa verificação: se for uma model não encontrada, talvez até esteja nesta classe, talvez esteja em uma classe mais interna.
+
+[01:30] Ou seja, se for uma model não encontrada, mas espero um JSON, não responda esse 404 como HTML, nós poderíamos fazer isso. Mas eu, Vinícius, prefiro não alterar esses códigos, adicionar um exception handler só para isso. O que prefiro é fazer essa abordagem, public function show (int $series), receber somente um inteiro e verificar se essa série realmente existe.
+
+[01:55] Então vou tentar fazer, vou receber series model e eu vou fazer um series find, a partir deste id, $seriesModel = Series::find($series);. Peguei essa model, se ela existir, eu vou fazer um DD desse series model, dd($seriesModel);. Se ela não existir, espero que talvez ela seja nula, alguma coisa do tipo.
+
+[02:15] Vamos enviar no Postman clicando no botão "Send" no canto superior direito e no resultado eu tenho nulo. Ou seja, posso verificar, se $seriesModel for nulo, if($seriesModel === null), eu posso simplesmente retornar um return response()->json(), em JSON porque é o que eu estou utilizando. E eu posso ter uma mensagem, por exemplo, (['message' => 'Series not found'], alguma coisa assim, alguma coisa do tipo, e mandar um , status: 404);.
+
+[02:40] Com isso eu estou fazendo a verificação correta e estou devolvendo uma resposta em JSON, com um 404, uma mensagem bonita e etc., está aqui embaixo no "Pretty". Dessa forma nós utilizamos também a resposta de forma correta.
+
+[02:55] Mas, como eu falei, eu poderia implementar um novo exception handler em Handler.php para verificar: se a exceção for do tipo model not found, que é uma exceção que o Laravel lança, eu já retornaria essa resposta em JSON. Eu prefiro não dar essa volta toda, mas é perfeitamente possível.
+
+[03:15] Inclusive eu vou deixar um Para Saber Mais mostrando exatamente como isso seria implementado, para que você saiba até como criar um exception handler.
+
+[03:23] Mas, continuando, um outro detalhe é que se você reparar, eu utilizei o find sem problemas, $seriesModel = Series::find($series), mas quando fui implementar aquela busca inicial, onde eu teria além da série - eu tenho que retornar o correto, return $seriesModel->with().
+
+[03:36] Quando além da série eu tentei retornar, por exemplo, ('seasons.episodes')->get(), eu fiz isso e eu acabei tendo uma coleção de todas as séries - inclusive vamos ver isso acontecendo.
+
+[03:48] Quando eu clico no botão "Send" no Postman, ele traz todas as séries que, se eu não me engano, por enquanto é uma só. Vamos até criar uma "Outra série". Vou criar.
+
+[03:57] Quando eu tento buscar uma única série dessa forma, ele traz essa outra série também. Por que isso está acontecendo? Vamos entender o Eloquent. Eu tenho aqui o $seriesModel, eu consegui fazer o find e busquei a minha model. Só que a partir dessa model estou criando uma nova query.
+
+[04:15] Esse método with, ele cria uma query. Então ele está buscando a partir da tabela de séries, com todos os episódios, estamos buscando tudo. Eu poderia fazer algo diferente. Por exemplo, se quero realmente buscar com todos os relacionamentos, ao invés de fazer o find, eu faria $seriesModel = Series::with(relations: 'seasons.episodes') e no final eu faria o ->find($series);.
+
+[04:44] Porque, o que está acontecendo? Eu estou criando uma query e no final desta query, estou buscando somente uma model com esse id. Isso é equivalente a fazer $seriesModel = Series::with(relations: 'seasons.episodes')->whereId($series)->first;. É equivalente, então posso utilizar o find de forma mais tranquila, vamos dizer assim.
+
+[05:04] Vamos ver o que acontece nesse caso de buscar uma série que não existe, só que com todo esse relacionamento a mais. Deixa eu apagar essa linha de retorno, deixar só return $seriesModel;, porque eu já fiz lá em cima. Vamos no Postman, buscar uma série que existe, para garantir que todas as temporadas e episódios vem. Perfeito.
+
+[05:21] Agora uma série que não existe. De novo, series not found, ou seja, essa resposta continua vindo como nula, sem problema nenhum. Então nós entendemos um pouco melhor tanto o Eloquent, o que ele faz para buscar as séries, para buscar uma model que eu recebo por parâmetro - o que ele faz é chamar o método find or fail. É isso o que ele faz.
+
+[05:41] Esse find or fail lança uma exceção, por baixo dos panos o Laravel trata essa exceção respondendo com esse 404, com aquele HTML.
+
+[05:51] Se eu quero algo diferente, uma das possibilidades é implementar um outro exception handler, que faz essa verificação antes do próprio Laravel, só que, para mim, esse tipo de verificação que fizemos é bem mais explícita, então prefiro por ser um pouco menos mágica.
+
+[06:06] Mas, de novo, vou deixar um Para Saber Mais de como implementar um exception handler. Agora que entendemos isso e o motivo dessa abordagem anterior não ter funcionado, porque o que eu fiz tinha sido Series::find($series)->with('seasons.episodes'), nós entendemos o motivo disto não funcionar, porque esse método with, ele cria uma nova query a partir da model e não do objeto em si, então a partir da classe.
+
+[06:30] Ou seja, ele estava buscando todos os dados da tabela. Entendido mais sobre o Eloquent, sobre exception handler, vamos falar um pouco mais sobre como, por exemplo, eu poderia trazer todas as temporadas de uma série. Será que o padrão Rest sugere alguma coisa? Vamos bater um papo bem rápido sobre isso no próximo vídeo.
+

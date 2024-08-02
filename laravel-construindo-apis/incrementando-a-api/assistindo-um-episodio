@@ -1,0 +1,55 @@
+[00:00] Bem-vindos de volta. Vamos falar de um assunto que pode inclusive gerar algumas discussões na internet, como utilizar o verbo patch.
+
+[00:07] O que acontece? O verbo put e o verbo patch, eles têm uma funcionalidade semelhante, mas não são idênticos. Além disso, existe bastante confusão em cima do verbo put. O que acontece?
+
+[00:21] O verbo put, ele deve ser utilizado para representar um recurso como um todo, inclusive a sua identificação, por isso precisamos mandar a identificação na URL.
+
+[00:33] Caso esse recurso que estamos transferindo já exista, essa nova representação, ou seja, tudo o que eu mandei pelo Postman, vai substituir o recurso já no banco de dados. Agora, caso ele não exista ainda, ele pode ser criado, ou seja, vou criar um novo recurso.
+
+[00:50] "Vinicius, quer dizer que o put pode se comportar como o post?". Sim. Segundo as especificações do protocolo HTTP, sim, essa é a recomendação e é assim que ele funcionaria.
+
+[01:01] Um exemplo de outro uso incorreto do put: imagine que tenho uma API de usuários - vamos lá, eu tenho o meu "/users" no Postman. Quando eu faço um post para "/users", eu preciso enviar as informações completas deste usuário.
+
+[01:18] Ou seja, preciso mandar o nome, por exemplo, Vinícius, preciso mandar um e-mail, "email@exampel.com" , etc., eu mando as informações. Caso eu queira atualizar, por exemplo, quero atualizar somente o e-mail, o que muita gente implementa é isso, faz um put e manda somente o e-mail.
+
+[01:44] Se o verbo put for corretamente implementado, o que vai acontecer é que a partir de agora, o usuário que eu alterei, o de id 1, por exemplo, ele só terá o e-mail, ele não tem mais nome, porque eu mandei uma nova representação dele e essa é a representação, somente o e-mail. Essa seria uma implementação correta de put.
+
+[02:01] Para eu fazer isso, alterar somente um dado do recurso, eu teria que utilizar o patch. Por isso vamos utilizar o verbo patch para marcar um episódio como assistido, porque eu não estou alterando o número dele, por exemplo.
+
+[02:16] No nosso verbo put no "Atualizar série" no menu do lado esquerdo da tela, eu estou mandando somente o nome, mas é só isso que uma série tem, essa é a representação de uma série.
+
+[02:24] As outras coisas são relacionamentos, ou seja, não é o recurso em si, e detalhes do próprio Eloquent de quando foi criada e quando foi atualizada. Agora, da série em si, essa é a única informação desse recurso, por isso eu só mando o nome. Se tivesse mais coisa e quisesse alterar só o nome, eu mandaria um patch.
+
+[02:44] Então caso, vamos criar uma URL para patch de "/episodes/1". Esse episódio só terá o "watched": atualizado, só isso e nada, além disso. Vamos implementar, será uma implementação simples também.
+
+[03:00] Eu vou implementar direto em api.php, sem criar um controller. Com o verbo patch para Route::patch(url:'/episodes/{episode}'.
+
+[03:11] Aqui outro detalhe é que eu poderia deixar claro que só estou enviando a informação watched, '/episodes/{episode}/watched'. Ou então até fugindo um pouco do padrão Rest, poderia utilizar um padrão de RPC, /watch, para marcar como assistir e outro como desassistir ou marcar como não assistido,/unwatch.
+
+[03:30] Mas eu vou fazer somente assim mesmo sem o watched, como já combinamos. Mas o ponto é que existem várias formas de resolver o mesmo problema, de modelar a mesma API. Cabe a você modelar como faz mais sentido, combinar entre as equipes e etc. Não será prejudicial para ninguém se você fizer isso daqui: Route::patch(url:'/episodes/{episode}/watch', function () {}), não vai.
+
+[03:51] Eu te garanto que isso não vai atrapalhar a vida de ninguém. Então vamos continuar, vou receber o episódio, Route::patch(url:'/episodes/{episode}', function (\App\Models\Episodes $episode) {. Eu vou marcar - também preciso receber se esse watched será verdadeiro ou falso, então vou receber um (\App\Models\Episodes $episode, Request $request).
+
+[04:09] Eu vou pegar se essa requisição está marcada como verdadeiro ou falso, $episode->watched = $request->watched;, simples assim. Depois posso fazer o save desse episódio, $episode->save();, e retorná-lo, return $episode;, simples assim. Agora eu marquei o meu episódio como assistido ou não.
+
+//código omitido
+
+Route::patch('/episodes/{episode}', function (\App\Models\Episode $episode, Request $request) {
+    $episode->watched = $request->watched;
+    $episode->save();
+
+    return $episode;
+
+//código omitidoCopiar código
+[04:32] Vamos no Postman, vamos buscar todos os episódios. Vamos na aba "Episódios da Série", vou pegar algum clicando no botão "Send", vou pegar esse episódio de id 2, que é o primeiro episódio mesmo. Vamos lá, no corpo eu vou marcá-lo como assistido, "watched": true. Deixa eu marcar como JSON em "Text > JSON".
+
+[04:56] Agora qual é a URL? Primeiro o verbo, que será "PATCH", deixa eu salvar , e a URL será "http://localhost:8000/api/episodes/2", o id do episódio. Repare que não estou mais utilizando ele como um sub-recurso ou alguma coisa do tipo, eu estou atualizando esse recurso mesmo, somente o campo watched.
+
+[05:20] Vamos ver se erramos algo. Quando eu envio, selecionando o botão "Send" no canto superior direito do Postman, aparentemente funcionou.
+
+[05:38] Quando tentar buscar todos os episódios de novo na aba "Episódios da série" e clicando no botão "Send", tem watched igual a 1. Aqui entra um outro detalhe, estou marcando o episódio como assistido, mas a representação dele não está interessante, não está ideal, vamos dizer assim. Ele está me retornando um inteiro.
+
+[05:58] Eu queria que essa visualização me mostrasse um booleano, ou verdadeiro ou falso, não 1 ou 0. No próximo vídeo vamos conversar um pouco sobre as possibilidades para corrigir esse problema.
+
+[06:10] Já te adianto que existe mais de uma, vamos dar uma analisada nelas e decidir qual é a melhor para o nosso caso. Te espero no próximo vídeo.
+

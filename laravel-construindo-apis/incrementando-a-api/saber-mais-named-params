@@ -1,0 +1,4 @@
+Desde o PHP 8.0 nós podemos passar parâmetros fora de ordem ou pular parâmetros opcionais, graças aos parâmetros nomeados, ou do inglês, named arguments. Os mutators e accessors do Laravel fazem uso dessa funcionalidade.
+
+Nesse vídeo eu explico em detalhes como funciona essa sintaxe do PHP:
+

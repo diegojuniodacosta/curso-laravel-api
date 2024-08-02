@@ -1,0 +1,9 @@
+Existe um conceito chamado idempotência, que apesar do nome complicado de falar, pode ser interpretado de forma simples: é uma propriedade de alguma operação que permite que ela seja executada várias vezes sem alterar o resultado.
+
+Para isso ficar mais claro, vamos a exemplos com REST. O verbo POST não é idempotente. Se você fizer a mesma requisição 2 vezes usando o verbo POST, 2 recursos diferentes serão criados, certo? Já o verbo PUT é idempotente. Se você fizer 2 vezes a mesma requisição para atualizar um recurso, o recurso terá o mesmo resultado sempre, sem nenhum efeito colateral.
+
+A ideia do verbo PUT é exatamente ser idempotente, ou seja, se nós enviamos um recurso que não existe, ele será criado. Se enviamos um recurso existente, ele será atualizado. Sendo assim, se eu enviar 10 mil requisições do tipo PUT, eu continuarei sempre com 1 único recurso, independente dele já existir antes ou não.
+
+A seguir tem uma referência para você ler mais sobre idempotência, mas recomendo pesquisar outras fontes também:
+
+Idempotente

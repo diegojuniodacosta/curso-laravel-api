@@ -1,0 +1,66 @@
+[00:00] Bem-vindos de volta. Vamos criar uma rota que recebe uma requisição do tipo post para inserir uma série. Eu terei um Route::post(url: '/series', e eu vou chamar o método store. Só que lembra que utilizamos, nos treinamentos anteriores, um método chamado resource, que já cria várias rotas para um mesmo controller?
+
+[00:22] Eu tenho também um Route::apiResource(). A diferença é que ele não vai criar, por exemplo, aquela rota que exibe um formulário, aquela de create, aquela de visualizar os detalhes para editar uma série, um recurso. Então ele vai remover essas duas URLs, que não utilizamos em APIs, e vai criar todas as outras como já conhecemos.
+
+[00:46] Então Route::apiResource() será para (url: '/series',, utilizando SeriesController, vindo no namespace correto, que é o de API. Dessa forma já crio todas as rotas de uma vez só. Conforme formos acessando, nós criamos os métodos. Vamos então criar aquele método store.
+
+[01:05] Em "app > Http > Controllers > Api > SeriesController", public function store(). Precisaremos receber uma requisição. Será que posso receber aquele (SeriesFormRequest $request);? Vamos ver o que ele tem de validação. Ele espera receber um nome, ou seja, é obrigatório esse nome, e precisa ter dois caracteres.
+
+[01:24] Então não muda nada na requisição que eu recebo de um formulário ou, no caso, de um corpo de uma API, que virá com um formato JSON. As regras são as mesmas, então vou utilizar esse SeriesFormRequest sem problema nenhum. "Deveríamos então remover esse form e chamar somente de SeriesRequest?".
+
+[01:42] Seria uma boa, eu faria isso, mas por enquanto, não vou fazer. Agora, o que quero realmente fazer é verificar se estou recebendo esses dados com sucesso, se o Laravel identificou que isso é um JSON, conseguiu fazer o parse, tudo automático. Vou fazer o dd($request->all());, para ver se todos os dados estão chegando.
+
+[02:04] Se você se lembra bem, quando fizemos com esses dados vindos de um formulário, nós recebemos um token de CSRF. Aqui não precisamos disso, porque uma API sempre recebe as requisições de outro local, então não teremos essa verificação. Mas vamos lá, continuando, eu vou abrir o Postman.
+
+[02:27] Eu vou criar uma outra requisição. Deixa eu fechar essa aba, fechar essa aba e criar uma nova requisição clicando no sinal de mais ("+") na parte superior da tela do lado da aba.
+
+[02:36] Vou copiar a URL "http://localhost:8000/api/series" da aba "Buscar Séries" e colar na nova aba que acabamos de criar. Ela será do tipo "POST", ou seja, não é mais uma requisição do tipo get, e ela terá um corpo, vamos selecionar "body", ou seja, eu vou enviar dados no corpo dessa requisição.
+
+[02:47] Repare que o Postman me dá algumas opções: não enviar nada "none", enviar no formato de formulário "form-data", em outro formato de formulário "x-www-form-urlencoded", alguma coisa pura, crua "raw", algum binário "binary", ou seja, um arquivo, e "GrapsQL", que não é o foco deste treinamento.
+
+[03:03] Nós vamos selecionar esse formato "Raw", cru, esse formato puro, onde eu poderia digitar, na minha requisição no Postman, qualquer coisa.
+
+[03:09] Só que vou informar que esse formato é JSON, selecionando "Text" que aparece após o "GraphQL" e escolhendo a opção "JSON", ou seja, ele já vai me dar alguma ajuda para formatar esse JSON, inclusive adiciona nos cabeçalhos, vai adicionar quando eu enviar, que é um JSON que estamos enviando. Mas, continuando, o que preciso enviar para criar uma série? Somente o nome.
+
+[03:29] Vou criar a série "nome": "Lost". Quando enviar essa requisição, espero ver o resultado daquele DD. Eu vou enviar - de novo aquele detalhe do agente. Agora como estamos enviando uma requisição do tipo post, precisaremos utilizar o desktop agent. Você vai clicar nesse link "Download desktop agent", vai baixar esse desktop agent, que eu já tenho instalado, e você vai inicializar ele.
+
+[03:57] Caso você utilize o navegador Brave, como eu, você precisa desativar os filtros, porque o Brave bloqueia esse desktop agent. Talvez algum outro bloqueador de anúncios também faça isso, então se atente a esse detalhe. Eu vou inicializar o meu Postman Agent, ou seja, eu só vou abrir esse programa, e vou atualizar a minha página do Postman.
+
+[04:16] Eu provavelmente vou perder essa requisição, então eu vou salvar ela selecionando "Save" no canto superior direito da tela. Vou salvar dentro de "Api Laravel", vou chamar ela de salvar série ou "Criar série". Minha requisição foi salva, então vou atualizar a página só para ele conseguir se conectar ao desktop agent.
+
+[04:38] Teoricamente já está tudo certo, vamos tentar enviar essa requisição. Agora sim ele conseguiu mandar. Só que o retorno foi um HTML, não um JSON, porque utilizamos o DD. Então até aqui nenhuma novidade, isso é esperado. Vou clicar em "Preview", e ele nos mostra o HTML formatado, mostrando que conseguimos acessar o nome sem problema nenhum.
+
+[05:00] A requisição, embora não seja de um formulário, seja em JSON como nós mandamos, ela chegou corretamente e o Laravel não tem nenhuma etapa a mais para trabalharmos com ela, ele já sabe parsear. Ele identifica que é um JSON, faz o parse e cria ela para nós, já foi validada. Se mando algo sem bater em todas as regras, nós teremos uma outra resposta, que ele mandou para o dado de logout.
+
+[05:27] O nosso series request, ele falhou na validação, então tenta nos mandar de volta para a mesma URL de séries, enfim, não precisamos entrar nesses detalhes aqui, depois falaremos sobre validação com API. Mas o ponto é: a validação está funcionando, então eu consigo acessar.
+
+[05:48] Agora vamos efetivamente salvar a nossa série. Voltando para o projeto no arquivo SeriesController, posso simplesmente fazer, no código, um Series::create($request->all());.
+
+[05:59] Só que agora eu não vou redirecionar o usuário para lugar nenhum, não vou mandar ele de volta para nenhum lugar. O que eu vou fazer é informar para o usuário que foi criado.
+
+[06:09] Eu posso inclusive salvar essa série, $serie=, e informar, devolver essa série mesmo no corpo, porque ele já terá, por exemplo, o id dessa série, caso ele queira acessar diretamente ou armazenar em cache, alguma coisa do tipo. Então posso pegar essa série e eu já vou retornar direto uma response do tipo JSON, return response()->json()Series::create($request->all());.
+
+[06:30] Nós temos esse método json que já responde algo como JSON. Isso não é necessário, como vimos, o Laravel já sabe parsear algo como JSON, mas se eu quiser ser mais específico, mais explícito, isso é interessante. Para que estou utilizando esse método e não simplesmente retornando a série direto?
+
+[06:49] Porque quero informar um status do código HTTP diferente. Vou informar o código HTTP como segundo parâmetro. Ao invés de 200, será um 201, all()), status:201);. Esse 201 significa created.
+
+[07:04] Então vamos no Postman, finalmente criar essa série. Quando eu envio a requisição selecionando o botão "Send" no canto superior direito da tela, ele manda - deixa eu voltar para o Pretty em "Body", ele responde com o id 9.
+
+[07:12] Ele diz quando foi criado e atualizado, e tem o status 201 created. Ou seja, conseguimos criar uma nova série. Se eu acessar a minha requisição de "Buscar séries" no Postman, teremos como resposta o Lost também. Obviamente ele foi sem a capa, sem a imagem, e nós podemos falar sobre imagens mais para frente.
+
+[07:33] Na verdade, vou deixar um "Para Saber Mais" falando sobre imagens quando estamos trabalhando com APIs - na verdade, arquivos no geral. Esse é um assunto bastante complexo, existem algumas alternativas. Por exemplo, posso ter um endpoint específico para receber arquivos - por exemplo, no corpo, ao invés de mandar um JSON, eu mandaria um binário.
+
+[07:54] Porque um arquivo posso enviar no formato JSON, só que isso seria bastante desperdício de espaço, de recurso e de banda. Então temos um endpoint específico para receber arquivos, e esse endpoint não salva no banco, ele salva o arquivo em algum lugar e devolve, na resposta, o caminho desse arquivo. Depois mandaríamos, nesse post de série, o caminho dessa imagem.
+
+[08:22] Eu mandaria o cover somente com um caminho que já fizemos o upload. Essa é uma abordagem. Para mandar como JSON, teria que utilizar um base64. Nós transformaríamos essa imagem, esse arquivo, em uma string e essa string nós enviaríamos.
+
+[08:38] Só que assim perdemos a possibilidade de comprimir esse arquivo para fazer a requisição, o processamento disso é mais demorado, porque eu preciso decodificar.
+
+[08:46] Então isso não é tão interessante se precisarmos de performance. Mas se quero praticidade, é uma ótima escolha. Existem outras abordagens, mas essas são as principais. Eu vou deixar um "Para Saber Mais" para você implementar sem mim essa parte de lidar com a capa das séries com APIs.
+
+[09:02] Eu não vou implementar a capa neste treinamento, mas eu já te expliquei como fazer e, no treinamento anterior, já lidamos com arquivos, então você já tem todo o conhecimento para implementar isso.
+
+[09:11] Continuando, agora que eu já consigo inserir uma série e buscar todas as séries, vamos tentar buscar uma série específica, por exemplo, só os detalhes de Lost, caso eu queria ver o nome da série com o id 9, eu não preciso buscar todas e ir percorrendo.
+
+[09:26] Enfim, no próximo vídeo vamos criar uma nova rota para buscar somente os detalhes de uma série.
+
